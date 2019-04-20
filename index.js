@@ -8,6 +8,7 @@ var counts = fs.readFileSync("counts.json");
 
 var jsonCounts = JSON.parse(counts);
 
+//gets single file commands with args
 fs.readdir("./commands/", (err, files) => {
 
 	if(err) console.log(err);
@@ -25,34 +26,36 @@ fs.readdir("./commands/", (err, files) => {
 	});
 });
 
-                var JSONcommands; 
-                var HAILcommands;
-                var reminders;
+    //gets basic no arg commands
+    var JSONcommands; 
+    var HAILcommands;
+    var reminders;
 
-                var edited_commands = JSON.stringify(JSONcommands);
-                var edited_HAILcommands = JSON.stringify(HAILcommands);
-                var edited_reminders = JSON.stringify(reminders);
+    var edited_commands = JSON.stringify(JSONcommands);
+    var edited_HAILcommands = JSON.stringify(HAILcommands);
+    var edited_reminders = JSON.stringify(reminders);
 
-                fs.readFile('commands.json', (err, data) => {
-                    if(err) throw err;
-                    JSONcommands = JSON.parse(data);
-                    });
+    fs.readFile('commands.json', (err, data) => {
+        if(err) throw err;
+        JSONcommands = JSON.parse(data);
+        });
 
-                fs.readFile('hailCommands.json', (err, data) => {
-                    if(err) throw err;
-                    HAILcommands = JSON.parse(data);
-                    });
+    fs.readFile('hailCommands.json', (err, data) => {
+        if(err) throw err;
+        HAILcommands = JSON.parse(data);
+        });
 
-                fs.readFile('remind.json', (err, data) => {
-                    if(err) throw err;
-                    reminders = JSON.parse(data);
-                    });
+    fs.readFile('remind.json', (err, data) => {
+        if(err) throw err;
+        reminders = JSON.parse(data);
+        });
 
 
 bot.on("ready", async () => {
 	console.log(`${bot.user.username} is online!`)
 	bot.user.setActivity("Destroy All Humans!")
 
+    //Rereads and writes to command files
     function reReadFiles()
     {
         setTimeout(function() {
@@ -60,27 +63,30 @@ bot.on("ready", async () => {
                 fs.readFile('commands.json', (err, data) => {
                     if(err) throw err;
                     JSONcommands = JSON.parse(data);
-                    });
+                });
 
                 fs.readFile('hailCommands.json', (err, data) => {
                     if(err) throw err;
                     HAILcommands = JSON.parse(data);
-                    });
+                });
+
+                var reminder = reminders.reminders;
 
                 for (i = 0; i < reminders.reminders.length; i ++) {
 
                     var currentTime = Date.now(); 
 
-                    if (reminders.reminders[i].reminderDate <= currentTime && reminders.reminders[i].sent == false) {
-                        bot.channels.get(reminders.reminders[i].channel).send("<@" + reminders.reminders[i].user + ">", {embed: {
+                    if (reminder[i].reminderDate <= currentTime && reminder[i].sent == false) {
+                        bot.channels.get(reminder[i].channel).send("<@" + reminder[i].user + ">", {embed: {
                             title: "Reminder",
-                            description: reminders.reminders[i].reminder,
+                            description: reminder[i].reminder,
                         }});
 
-                        reminders.reminders[i].sent = true;
+                        reminder[i].sent = true;
                     }
-                    if (reminders.reminders[i].sent == true) {
-                         reminders.reminders.splice(i, 1);
+
+                    if (reminder[i].sent == true) {
+                         reminder.splice(i, 1);
 
                         edited_reminders = JSON.stringify(reminders);
                         fs.writeFileSync('remind.json', edited_reminders)
@@ -90,6 +96,7 @@ bot.on("ready", async () => {
                             reminders = JSON.parse(data);
                         });
                     }
+
                 }
 
                 edited_commands = JSON.stringify(JSONcommands);
@@ -129,40 +136,37 @@ bot.on("message", async message => {
 
     for (x = 0; x < helpQuestions.length; x++) {
     if (message.content.indexOf(helpQuestions[x]) !== -1) {
-     message.channel.send("https://media.giphy.com/media/3o7btT1T9qpQZWhNlK/giphy.gif")
-     return;
-     }
- }
+        message.channel.send("https://media.giphy.com/media/3o7btT1T9qpQZWhNlK/giphy.gif")
+        return;
+        }
+    }
 
-    for (x = 0; x < HAILcommands.commands.length; x++) {
-        for (i = 0; i < HAILcommands.commands[x].command.length; i++)   {
+    //checks if a message is a hail command and responds
+    var hailCommands = HAILcommands.commands;
+    for (x = 0; x < hailCommands.length; x++) {
+        for (i = 0; i < hailCommands[x].command.length; i++)   {
             for (n = 0; n < hailPrefixes.length; n++){
-            if (message.content.startsWith(hailPrefixes[n] + HAILcommands.commands[x].command[i])) {
-                HAILcommands.commands[x].count = HAILcommands.commands[x].count + 1; 
-                message.channel.send("" + HAILcommands.commands[x].command[i] + " has been hailed " + HAILcommands.commands[x].count + " times! " + HAILcommands.commands[x].response);
-                return;
+                if (message.content.startsWith(hailPrefixes[n] + hailCommands[x].command[i])) {
+                        hailCommands[x].count = hailCommands[x].count + 1; 
+                        message.channel.send("" + hailCommands[x].command[i] + " has been hailed " + hailCommands[x].count + " times! " + hailCommands[x].response);
+                        return;
                 }
             }
         }
     }
 
-	for (x = 0; x < JSONcommands.commands.length; x++) {
-		for (i = 0; i < JSONcommands.commands[x].command.length; i++)	{
+    //checks if a message is a command and responds
+    var commands = JSONcommands.commands;
+	for (x = 0; x < commands.length; x++) {
+		for (i = 0; i < commands[x].command.length; i++)	{
 			for (n = 0; n < prefixes.length; n++){
-			if (message.content.toLowerCase().startsWith(prefixes[n] + JSONcommands.commands[x].command[i])) {
-				message.channel.send("" + JSONcommands.commands[x].response);
-				return;
-				}
+    			if (message.content.toLowerCase().startsWith(prefixes[n] + commands[x].command[i])) {
+        				message.channel.send("" + commands[x].response);
+        				return;
+    			}
 			}
 		}
 	}
-
-	var Delay = [5000, 10000, 20000];
-
-	function randomDelay()
-            {
-                return Math.floor((Math.random() * Delay.length));
-            }
 
     var msConversion = [
         {
@@ -191,7 +195,17 @@ bot.on("message", async message => {
         }
     ];
 
+    //boring randomness for slowpoke command
+    var Delay = [5000, 10000, 20000];
+
+    function randomDelay()
+    {
+                return Math.floor((Math.random() * Delay.length));
+    }
+
 	for (n = 0; n < prefixes.length; n++){
+
+        //slow poke command
 		if (message.content.startsWith(prefixes[n] + "slowpoke")) {
 			var timer = Delay[randomDelay()];
 			setTimeout(function() {message.channel.send("https://vignette4.wikia.nocookie.net/pokemon/images/b/b7/079Slowpoke_Dream.png/revision/latest?cb=20140820072339" + " \n slowpoke was " + timer/1000 + " seconds late" );}, timer);
@@ -199,6 +213,7 @@ bot.on("message", async message => {
 			return;
 			}
 
+        //reminder command
         if (message.content.startsWith(prefixes[n] + "remindme")) {
 
 
@@ -219,6 +234,7 @@ bot.on("message", async message => {
 
             var reminderDate = 0;
 
+            //crazy comments below because I struggled to make this work
             for(x = 0; x < msConversion.length; x++){
                 //iterates through a specific supported times recognizable keyword/character to find a match
                 for(i = 0; i < msConversion[x].time.length; i++){
@@ -265,7 +281,8 @@ bot.on("message", async message => {
 	if(commandfile) commandfile.run(bot, message, args);
 
 });
-
+    
+    //messages channel when a member joins or leaves the server
     bot.on('guildMemberAdd', member => {
         _channel = member.guild.channels.get('104739787872694272');
 
