@@ -17,7 +17,8 @@ module.exports.run = async (bot, message, args) => {
 	var messageArray = message.content.split("\"");
 
 	if (messageArray[3] === undefined){
-		messageArray[3] = ""; 
+		message.channel.send("Command needs a response. Proper format is: \n`!newhailcommand \"command\" \"response\"`");
+		return; 
 	}
 
 	HAILcommands['commands'].push({"command":[messageArray[1]],"count":0,"response":messageArray[3]})

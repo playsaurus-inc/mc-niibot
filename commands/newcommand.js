@@ -25,6 +25,20 @@ module.exports.run = async (bot, message, args) => {
 
 	let edited_JSONcommands = JSON.stringify(JSONcommands);
  	fs.writeFileSync('commands.json', edited_JSONcommands);
+	message.reply("", {embed: {
+                    title: "Command added",
+                    fields: [
+                        {
+                            name: 'Command name:',
+                            value: messageArray[1],
+                            inline: true,
+                        }, 
+                        {
+                            name: 'Response:',
+                            value: messageArray[3],
+                        }
+                        ],
+                }});
 	}
 
 module.exports.help = {
