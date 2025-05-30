@@ -1,15 +1,13 @@
 
-    const { SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
-        data: new SlashCommandBuilder()
+    data: new SlashCommandBuilder()
         .setName("log")
         .setDescription("info on logHS or logGold"),
-    
-        async execute(interaction)
-        {
-            const {channel, options} = interaction; 
-            await interaction.reply({content: "logHS or logGold refers to the number after the e in Scientific Notation. Use Scientific Notation.", ephemeral: false })
-        }
+
+    async execute(interaction) {
+        const { channel, options } = interaction;
+        await interaction.reply({ content: "logHS or logGold refers to the number after the e in Scientific Notation. Use Scientific Notation.", ephemeral: false })
     }
-        
+}
