@@ -24,7 +24,4 @@ bannedSaves.json
 bannedFromRoles.json
 
 # Temporary files
-message.txt
-reactions_*.txt
-*.log
-*.txt
+uploads/

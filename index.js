@@ -353,12 +353,17 @@ bot.on(Events.MessageCreate, message =>
 					let name = message.attachments.first().name;
 					if(name.includes('.txt'))
 					{
+						const uploadDir = path.join(__dirname, 'uploads');
+						if (!fs.existsSync(uploadDir)) {
+						  	fs.mkdirSync(uploadDir);
+						}
+
 						request.get(message.attachments.first().url)
 							.on('error', console.error)
-							.pipe(fs.createWriteStream(__dirname + '/' + name))
+							.pipe(fs.createWriteStream(path.join(uploadDir, name)))
 							.on('finish', function ()
 							{
-								fs.readFile(__dirname + '/' + name, "utf8", (err, data) =>
+								fs.readFile(path.join(uploadDir, name), "utf8", (err, data) =>
 								{
 									var save = ""
 
@@ -409,8 +414,12 @@ bot.on(Events.MessageCreate, message =>
 											setRole(highestHeroUnlocked, message);
 										}
 									}
-								})
-							})
+								});
+
+								fs.unlink(path.join(uploadDir, name), err => {
+									if (err) console.error('Failed to clean up upload:', err);
+								});
+							});
 					}
 				}
 			}
