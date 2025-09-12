@@ -20,22 +20,18 @@ npm install
 
 ### 2. Configure the Bot
 
-You will need to create a `botconfig.json` file in the root directory of the project. This file should contain your bot's credentials. You can model it after this structure:
+Create your environment configuration file:
 
-```json
-{
-    "token": "YOUR_DISCORD_BOT_TOKEN",
-    "clientId": "YOUR_BOTS_CLIENT_ID",
-    "guildId": "YOUR_DISCORD_SERVER_ID"
-}
+```bash
+cp .env.example .env
 ```
 
-Replace the placeholder values with your actual:
-*   `token`: Your Discord bot token.
-*   `clientId`: Your bot's client ID.
-*   `guildId`: The ID of the Discord server (guild) where the bot will operate.
+Then edit the `.env` file and replace the placeholder values with your actual:
+*   `DISCORD_TOKEN`: Your Discord bot token.
+*   `DISCORD_CLIENT_ID`: Your bot's client ID.
+*   `DISCORD_GUILD_ID`: The ID of the Discord server (guild) where the bot will operate.
 
-> If you are developing locally, you may want to use a dedicated test server and its ID for `guildId`.
+> If you are developing locally, you may want to use a dedicated test server and its ID for `DISCORD_GUILD_ID`.
 
 ### 3. Start the Bot
 

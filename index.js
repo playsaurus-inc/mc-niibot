@@ -1,7 +1,14 @@
 const util = require('util');
 const request = require('request');
 const atob = require('atob');
-const { token, clientId, guildId } = require(__dirname + "/botconfig.json");
+require('dotenv').config();
+
+const { DISCORD_TOKEN: token, DISCORD_CLIENT_ID: clientId, DISCORD_GUILD_ID: guildId } = process.env;
+
+if (!token || !clientId || !guildId) {
+    console.error('Missing required environment variables: DISCORD_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID');
+    process.exit(1);
+}
 const { REST, Routes, Client, Collection, Events, GatewayIntentBits, Partials, PermissionFlagsBits, PermissionsBitField } = require("discord.js");
 const fs = require("fs");
 const path = require('path');
