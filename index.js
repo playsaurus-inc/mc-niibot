@@ -2,6 +2,33 @@ const util = require('util');
 const request = require('request');
 const atob = require('atob');
 require('dotenv').config();
+const Sentry = require("@sentry/node");
+const { execSync } = require('child_process');
+
+/**
+ * Retrieves the latest Git tag.
+ *
+ * @returns {string|undefined} The latest Git tag or undefined if not found.
+ */
+function getGitTag() {
+    try {
+        return execSync('git describe --tags --abbrev=0').toString().trim();
+    } catch (error) {
+        return undefined;
+    }
+}
+
+// Initialize Sentry
+if (process.env.SENTRY_DSN) {
+    Sentry.init({
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.APP_ENV || 'production',
+        release: getGitTag(),
+        integrations: [
+            Sentry.captureConsoleIntegration({ levels: ['error'] })
+        ]
+    });
+}
 
 const { DISCORD_TOKEN: token, DISCORD_CLIENT_ID: clientId, DISCORD_GUILD_ID: guildId } = process.env;
 
