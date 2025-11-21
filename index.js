@@ -18,16 +18,19 @@ function getGitTag() {
     }
 }
 
-// Initialize Sentry
 if (process.env.SENTRY_DSN) {
-    Sentry.init({
-        dsn: process.env.SENTRY_DSN,
-        environment: process.env.APP_ENV || 'production',
-        release: getGitTag(),
-        integrations: [
-            Sentry.captureConsoleIntegration({ levels: ['error'] })
-        ]
-    });
+	Sentry.init({
+		dsn: process.env.SENTRY_DSN,
+		environment: process.env.APP_ENV || 'production',
+		release: getGitTag(),
+		integrations: (defaults) => [
+			...defaults,
+			Sentry.captureConsoleIntegration({ levels: ['error'] }),
+		],
+	});
+	console.log('Sentry initialized');
+} else {
+	console.log('Sentry DSN not provided, Sentry not initialized');
 }
 
 const { DISCORD_TOKEN: token, DISCORD_CLIENT_ID: clientId, DISCORD_GUILD_ID: guildId } = process.env;
