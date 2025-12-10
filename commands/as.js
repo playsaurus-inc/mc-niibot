@@ -1,13 +1,16 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("as")
-        .setDescription("Outsider calc link"),
+	data: new SlashCommandBuilder()
+		.setName('as')
+		.setDescription('Outsider calc link'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
+	async execute(interaction) {
+		const { channel, options } = interaction;
 
-        await interaction.reply({ content: "Ancient Souls or AS should be spent according to <https://driej.github.io/Clicker-Heroes-Outsiders/>, also found in <#207675653091229697>" })
-    }
+		await interaction.reply({
+			content:
+				'Ancient Souls or AS should be spent according to <https://driej.github.io/Clicker-Heroes-Outsiders/>, also found in <#207675653091229697>',
+		});
+	},
 };

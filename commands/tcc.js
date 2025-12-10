@@ -1,13 +1,15 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("tcc")
-        .setDescription("Treasure Chest Chance"),
+	data: new SlashCommandBuilder()
+		.setName('tcc')
+		.setDescription('Treasure Chest Chance'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
+	async execute(interaction) {
+		const { channel, options } = interaction;
 
-        await interaction.reply({ content: "Treasure Chest Chance. It's usually 1% anyway. No big deal." })
-    }
+		await interaction.reply({
+			content: "Treasure Chest Chance. It's usually 1% anyway. No big deal.",
+		});
+	},
 };
