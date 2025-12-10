@@ -326,8 +326,9 @@ function setRole(highestHeroUnlocked, message) {
 }
 
 function decodeSave(data) {
+	let saveData;
 	if (data) {
-		var saveData = Buffer.from(data.slice(32), 'base64');
+		saveData = Buffer.from(data.slice(32), 'base64');
 
 		if (saveData) {
 			try {
@@ -398,16 +399,16 @@ bot.on(Events.MessageCreate, (message) => {
 													'Your save could not be read, be sure to copy the full text of the save file and try again.',
 												);
 											} else {
-												var userBanned = false;
-												var highestHeroUnlocked = getHighestHeroUnlocked(save);
-												var rubies = save.rubies;
-												var gameUID = save.uniqueId;
+												let userBanned = false;
+												const highestHeroUnlocked = getHighestHeroUnlocked(save);
+												const rubies = save.rubies;
+												const gameUID = save.uniqueId;
 
-												var targetMember = bot.guilds.cache
+												const targetMember = bot.guilds.cache
 													.get('104739787872694272')
 													.members.cache.get(message.author.id);
 
-												for (var i = 0; i < JSONsaves.saves.length; i++) {
+												for (let i = 0; i < JSONsaves.saves.length; i++) {
 													if (JSONsaves.saves[i].gameUID) {
 														if (
 															(userBanned === false &&
@@ -420,7 +421,7 @@ bot.on(Events.MessageCreate, (message) => {
 															bannedFromRoles.bannedFromRoles.push(
 																message.author.id,
 															);
-															var edited_bannedFromRoles =
+															const edited_bannedFromRoles =
 																JSON.stringify(bannedFromRoles);
 															fs.writeFileSync(
 																`${__dirname}/bannedFromRoles.json`,
@@ -502,7 +503,7 @@ bot.on(Events.MessageCreate, (message) => {
 				)
 			) {
 				getNumberOfRoles(message.author.id).then((_numRoles) => {
-					var lowercaseMessage = message.content.toLowerCase();
+					const lowercaseMessage = message.content.toLowerCase();
 					if (
 						(lowercaseMessage.includes('@everyone') ||
 							lowercaseMessage.includes('free') ||
@@ -512,8 +513,8 @@ bot.on(Events.MessageCreate, (message) => {
 							lowercaseMessage.includes('nltro')) &&
 						(message.embeds.length > 0 || lowercaseMessage.includes('https:/'))
 					) {
-						var messageContent = message.content;
-						var auditChannel = message.guild.channels.cache.find(
+						const messageContent = message.content;
+						const auditChannel = message.guild.channels.cache.find(
 							(channel) => channel.name === 'audit-log',
 						);
 						message.delete();
@@ -530,7 +531,7 @@ bot.on(Events.MessageCreate, (message) => {
 			}
 
 			if (message.content.toLowerCase().includes('discord.gg')) {
-				var auditChannel = message.guild.channels.cache.find(
+				const auditChannel = message.guild.channels.cache.find(
 					(channel) => channel.name === 'audit-log',
 				);
 				if (memberJoinTime > currentTime - 43200000) {
@@ -556,14 +557,14 @@ bot.on(Events.MessageCreate, (message) => {
 			}
 
 			if (memberJoinTime > currentTime - 43200000) {
-				var autoBanWords = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
-				var auditChannel = message.guild.channels.cache.find(
+				const autoBanWords = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
+				const auditChannel = message.guild.channels.cache.find(
 					(channel) => channel.name === 'audit-log',
 				);
 
-				for (i = 0; i < autoBanWords.length; i++) {
+				for (let i = 0; i < autoBanWords.length; i++) {
 					if (message.content.toLowerCase().includes(autoBanWords[i])) {
-						var messageContent = message.content;
+						const messageContent = message.content;
 						message.delete();
 
 						message.member
@@ -602,11 +603,11 @@ bot.on(Events.MessageCreate, (message) => {
 								)
 							)
 								return;
-							var auditChannel = message.guild.channels.cache.find(
+							const auditChannel = message.guild.channels.cache.find(
 								(channel) => channel.name === 'audit-log',
 							);
 
-							var messageContent = message.content;
+							const messageContent = message.content;
 							message.delete();
 
 							message.member
@@ -629,7 +630,7 @@ bot.on(Events.MessageCreate, (message) => {
 				}
 			}
 
-			var channel = message.channel.id;
+			const channel = message.channel.id;
 			if (channelsPosttedIn[message.author.id]) {
 				const user = channelsPosttedIn[message.author.id];
 				let keys = Object.keys(user);
@@ -642,8 +643,10 @@ bot.on(Events.MessageCreate, (message) => {
 				}
 
 				const messageHistory = [];
-				keys.forEach((key) => messageHistory.push(user[key]));
-				var sortedHistory = messageHistory.sort((a, b) => a - b);
+				for (const key of keys) {
+					messageHistory.push(user[key]);
+				}
+				const sortedHistory = messageHistory.sort((a, b) => a - b);
 				console.log(sortedHistory);
 
 				if (sortedHistory[0] - sortedHistory[3] > -10000) {
@@ -656,7 +659,7 @@ bot.on(Events.MessageCreate, (message) => {
 					)
 						return;
 
-					var auditChannel = message.guild.channels.cache.find(
+					const auditChannel = message.guild.channels.cache.find(
 						(channel) => channel.name === 'audit-log',
 					);
 					message.delete();
