@@ -1,9 +1,7 @@
-const util = require('util');
 const request = require('request');
-const atob = require('atob');
 require('dotenv').config();
 const Sentry = require('@sentry/node');
-const { execSync } = require('child_process');
+const { execSync } = require('node:child_process');
 
 /**
  * Retrieves the latest Git tag.
@@ -13,7 +11,7 @@ const { execSync } = require('child_process');
 function getGitTag() {
 	try {
 		return execSync('git describe --tags --abbrev=0').toString().trim();
-	} catch (error) {
+	} catch (_error) {
 		return undefined;
 	}
 }
@@ -56,10 +54,9 @@ const {
 	PermissionFlagsBits,
 	PermissionsBitField,
 } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-const JSONbig = require('json-bigint')({ useNativeBigInt: true });
-const zlib = require('zlib');
+const fs = require('node:fs');
+const path = require('node:path');
+const zlib = require('node:zlib');
 const bot = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -74,7 +71,6 @@ const bot = new Client({
 		repliedUser: true,
 	},
 });
-var messageText;
 var userMessageHistory = {};
 var channelsPosttedIn = []; //should refactor to be a part of user message history
 
@@ -138,26 +134,26 @@ var bannedFromRoles;
 setInterval(
 	() => {
 		log('writing to files');
-		fs.writeFileSync(__dirname + '/saves.json', JSON.stringify(JSONsaves));
+		fs.writeFileSync(`${__dirname}/saves.json`, JSON.stringify(JSONsaves));
 		fs.writeFileSync(
-			__dirname + '/bannedSaves.json',
+			`${__dirname}/bannedSaves.json`,
 			JSON.stringify(JSONBannedsaves),
 		);
 	},
 	1000 * 60 * 5,
 );
 
-fs.readFile(__dirname + '/saves.json', (err, data) => {
+fs.readFile(`${__dirname}/saves.json`, (err, data) => {
 	if (err) throw err;
 	JSONsaves = JSON.parse(data);
 });
 
-fs.readFile(__dirname + '/bannedSaves.json', (err, data) => {
+fs.readFile(`${__dirname}/bannedSaves.json`, (err, data) => {
 	if (err) throw err;
 	JSONBannedsaves = JSON.parse(data);
 });
 
-fs.readFile(__dirname + '/bannedFromRoles.json', (err, data) => {
+fs.readFile(`${__dirname}/bannedFromRoles.json`, (err, data) => {
 	if (err) throw err;
 	bannedFromRoles = JSON.parse(data);
 });
@@ -217,20 +213,14 @@ function log(log) {
 	);
 }
 
-function getRoles() {
-	return new Promise((res, rej) => {
-		res(bot.guilds.cache.get(guildId).roles);
-	});
-}
-
 function getGuildMember(userID) {
-	return new Promise((res, rej) => {
+	return new Promise((res, _rej) => {
 		res(bot.guilds.cache.get(guildId).members.fetch(userID));
 	});
 }
 
 function getNumberOfRoles(userID) {
-	return new Promise((res, rej) => {
+	return new Promise((res, _rej) => {
 		res(
 			getGuildMember(userID).then((member) => {
 				var numRoles = member.roles.cache.map((role) => role.toString());
@@ -395,78 +385,82 @@ bot.on(Events.MessageCreate, (message) => {
 							.on('error', console.error)
 							.pipe(fs.createWriteStream(path.join(uploadDir, name)))
 							.on('finish', () => {
-								fs.readFile(path.join(uploadDir, name), 'utf8', (err, data) => {
-									var save = '';
+								fs.readFile(
+									path.join(uploadDir, name),
+									'utf8',
+									(_err, data) => {
+										var save = '';
 
-									if (data.includes('7a990') || data.includes('7e8bb')) {
-										save = decodeSave(data);
-										if (save == 'FAILURE') {
-											message.reply(
-												'Your save could not be read, be sure to copy the full text of the save file and try again.',
-											);
-										} else {
-											var userBanned = false;
-											var highestHeroUnlocked = getHighestHeroUnlocked(save);
-											var rubies = save.rubies;
-											var gameUID = save.uniqueId;
+										if (data.includes('7a990') || data.includes('7e8bb')) {
+											save = decodeSave(data);
+											if (save === 'FAILURE') {
+												message.reply(
+													'Your save could not be read, be sure to copy the full text of the save file and try again.',
+												);
+											} else {
+												var userBanned = false;
+												var highestHeroUnlocked = getHighestHeroUnlocked(save);
+												var rubies = save.rubies;
+												var gameUID = save.uniqueId;
 
-											var targetMember = bot.guilds.cache
-												.get('104739787872694272')
-												.members.cache.get(message.author.id);
+												var targetMember = bot.guilds.cache
+													.get('104739787872694272')
+													.members.cache.get(message.author.id);
 
-											for (var i = 0; i < JSONsaves['saves'].length; i++) {
-												if (JSONsaves['saves'][i].gameUID) {
-													if (
-														(userBanned == false &&
-															JSONsaves['saves'][i].gameUID == gameUID &&
-															JSONsaves['saves'][i].userID !=
-																message.author.id) ||
-														rubies > 15000
-													) {
-														userBanned = true;
-														bannedFromRoles.bannedFromRoles.push(
-															message.author.id,
-														);
-														var edited_bannedFromRoles =
-															JSON.stringify(bannedFromRoles);
-														fs.writeFileSync(
-															__dirname + '/bannedFromRoles.json',
-															edited_bannedFromRoles,
-														);
-														message.reply(
-															'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
-														);
+												for (var i = 0; i < JSONsaves.saves.length; i++) {
+													if (JSONsaves.saves[i].gameUID) {
+														if (
+															(userBanned === false &&
+																JSONsaves.saves[i].gameUID === gameUID &&
+																JSONsaves.saves[i].userID !==
+																	message.author.id) ||
+															rubies > 15000
+														) {
+															userBanned = true;
+															bannedFromRoles.bannedFromRoles.push(
+																message.author.id,
+															);
+															var edited_bannedFromRoles =
+																JSON.stringify(bannedFromRoles);
+															fs.writeFileSync(
+																`${__dirname}/bannedFromRoles.json`,
+																edited_bannedFromRoles,
+															);
+															message.reply(
+																'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
+															);
 
-														if (targetMember) {
-															targetMember.roles.set([]);
+															if (targetMember) {
+																targetMember.roles.set([]);
+															}
 														}
 													}
 												}
-											}
 
-											if (
-												userBanned == false &&
-												!bannedFromRoles.bannedFromRoles.includes(
-													message.author.id,
-												)
-											) {
-												JSONsaves['saves'].push({
-													userID: message.author.id,
-													gameUID: gameUID,
-													save: data,
-												});
-											} else {
-												JSONBannedsaves['saves'].push({
-													userID: message.author.id,
-													gameUID: gameUID,
-													userBanned: userBanned,
-													save: data,
-												});
+												if (
+													userBanned === false &&
+													!bannedFromRoles.bannedFromRoles.includes(
+														message.author.id,
+													)
+												) {
+													JSONsaves.saves.push({
+														userID: message.author.id,
+														gameUID: gameUID,
+														save: data,
+													});
+												} else {
+													JSONBannedsaves.saves.push({
+														userID: message.author.id,
+														gameUID: gameUID,
+														userBanned: userBanned,
+														save: data,
+													});
+												}
+												setRole(highestHeroUnlocked, message);
 											}
-											setRole(highestHeroUnlocked, message);
 										}
-									}
-								});
+									},
+								);
 
 								fs.unlink(path.join(uploadDir, name), (err) => {
 									if (err) console.error('Failed to clean up upload:', err);
@@ -479,7 +473,7 @@ bot.on(Events.MessageCreate, (message) => {
 	}
 
 	if (
-		message.channel.id == 104740000591024128 &&
+		message.channel.id === '104740000591024128' &&
 		!message.content.toLowerCase().startsWith('recruiting:')
 	) {
 		log(message.content);
@@ -488,7 +482,7 @@ bot.on(Events.MessageCreate, (message) => {
 		) {
 			const messageText = `<@${message.member.id}> Hey, it appears you posted in <#104740000591024128> without proper format or posted a non recruitment post.\n<#104740000591024128> is only for clans actively searching for members. If you are looking for a clan reach out to the clan leaders who have posted there.\nIf your post was a recruitment post, make sure to start it with "Recruiting:"`;
 			message.member
-				.send(messageText + '\n\n Message Copy: ' + message.content)
+				.send(`${messageText}\n\n Message Copy: ${message.content}`)
 				.catch(() => {
 					var channel = bot.channels.cache.get('260159911822884866');
 					channel.send(messageText);
@@ -501,13 +495,13 @@ bot.on(Events.MessageCreate, (message) => {
 	//Auto mod stuff
 
 	if (!message.channel.isDMBased()) {
-		if (message.guild.id == guildId) {
+		if (message.guild.id === guildId) {
 			if (
 				!message.member.permissions.has(
 					PermissionsBitField.Flags.ManageMessages,
 				)
 			) {
-				getNumberOfRoles(message.author.id).then((numRoles) => {
+				getNumberOfRoles(message.author.id).then((_numRoles) => {
 					var lowercaseMessage = message.content.toLowerCase();
 					if (
 						(lowercaseMessage.includes('@everyone') ||
@@ -541,7 +535,7 @@ bot.on(Events.MessageCreate, (message) => {
 				);
 				if (memberJoinTime > currentTime - 43200000) {
 					message.delete();
-					log('Link posted by ' + message.author.username);
+					log(`Link posted by ${message.author.username}`);
 					message.member
 						.send('Do not post links to other Discord Servers')
 						.then(console.log)
