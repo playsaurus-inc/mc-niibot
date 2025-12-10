@@ -19,13 +19,10 @@ module.exports = {
             "fingerguns": "https://i.imgur.com/NLwQBFV.png",
             "hm": "http://i.imgur.com/1sdt3QE.gifv",
             "iguess": "https://i.imgur.com/G1F1ECN.png",
-            "gpv": "https://abload.de/img/gameplayvids3jpju.png",
             "fucked": "https://i.ytimg.com/vi/eh0mDYfTCtE/maxresdefault.jpg",
             "fuck": "https://imgur.com/a/AUYFeun",
             "fish": "http://i.imgur.com/5iCpnvM.png",
             "dumstered": "https://media.giphy.com/media/9w4omxSdj5rSo/giphy.gif",
-            "chester": "https://abload.de/img/chestero9zjh.png",
-            "chesterer": "https://abload.de/img/chester1yq5o.png",
             "it": "https://www.resolvetech.co.uk/wp-content/uploads/2016/01/Hello-IT-Have.jpg",
             "abe": "https://media.giphy.com/media/fDO2Nk0ImzvvW/giphy.gif",
             "angry": "https://cdn.discordapp.com/attachments/104739787872694272/575381295912189960/AngryCidNoises.png",
@@ -60,7 +57,6 @@ module.exports = {
             "tldr": "https://cdn.discordapp.com/attachments/259897497554649098/732022539576016896/main-qimg-0995fc35572e8eb49818519996b41357.png",
             "watman": "https://pygospasprofession.files.wordpress.com/2013/07/watman.jpg",
             "well": "http://i.imgur.com/U5ISRyL.gifv",
-            "pizza": "https://abload.de/img/hypepizzazykvp.png",
             "whoosh": "https://i.imgur.com/axJmn.gif",
             "um": "https://i.imgur.com/YAGpXPd.png"
         }

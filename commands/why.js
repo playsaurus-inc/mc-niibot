@@ -2,12 +2,12 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("666")
-        .setDescription("For the glory of satan of course!"),
+        .setName("why")
+        .setDescription("Why things are the way they are"),
 
     async execute(interaction) {
         const { channel, options } = interaction;
 
-        await interaction.reply({ content: "For the glory of satan of course!" })
+        await interaction.reply({ content: "Because you touch yourself at night." })
     }
 };

@@ -1,15 +1,13 @@
-
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("pretrans")
-        .setDescription("info on pre trans"),
+        .setDescription("Ancients before transcending"),
 
     async execute(interaction) {
         const { channel, options } = interaction;
 
-
-        await interaction.reply({ content: "Get Siyalatas, Libertas, Mammon, and Mimzee. Level them all the same. Unspent HS equals (Siyalatas level+1)^2. \nAlternatively, clicking consistently using Juggernaut is optimal but can be tedious and committal. Unspent HS equals (Juggernaut level+1)^(5/2)\nDon't worry about any other ancients until you reach 300 and transcend." })
+        await interaction.reply({ content: "Juggernaut is optimal if you have an autoclicker; place it on the monster for combo. Level Jugg when HS is more than his (cost × level).\nOtherwise use idle: get Siyalatas and Libertas, level them equally. Level both up when HS is more than Siya's (cost × level).\nDon't worry about any other ancients until you reach 300 and transcend." })
     }
-}
+};
