@@ -17,6 +17,6 @@
 		"request": "^2.88.2"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.6"
+		"@biomejs/biome": "^2.3.8"
 	}
 }
