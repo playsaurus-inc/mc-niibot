@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('maxancients')
-		.setDescription('Ancients with a effect cap'),
+		.setDescription('Ancients with an effect cap'),
 
 	async execute(interaction) {
 		await interaction.reply({
