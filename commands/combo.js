@@ -9,6 +9,6 @@ module.exports = {
     async execute(interaction) {
         const { channel, options } = interaction;
 
-        await interaction.reply({ content: "Juggernaut's combo lasts 5 minutes after last time you've clicked monsters. Combo does not stack with idle. If you're idle, you have only idle bonus." })
+        await interaction.reply({ content: "Juggernaut's combo lasts 5 minutes after last time you or your autoclicker have clicked monsters. Combo damage does not apply when idle." })
     }
 }
