@@ -25,3 +25,6 @@ bannedFromRoles.json
 
 # Temporary files
 uploads/
+
+# AI Files
+.claude/settings.local.json

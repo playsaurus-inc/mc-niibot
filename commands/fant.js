@@ -1,14 +1,14 @@
-
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("fant")
-        .setDescription("First Ascension New Transcension"),
+	data: new SlashCommandBuilder()
+		.setName('fant')
+		.setDescription('First Ascension New Transcension'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
-
-        await interaction.reply({ content: "First Ascension New Transcension", ephemeral: false })
-    }
-}
+	async execute(interaction) {
+		await interaction.reply({
+			content: 'First Ascension New Transcension',
+			ephemeral: false,
+		});
+	},
+};

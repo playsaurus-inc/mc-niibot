@@ -1,13 +1,9 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("ping")
-        .setDescription("Pong!"),
+	data: new SlashCommandBuilder().setName('ping').setDescription('Pong!'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
-
-        await interaction.reply({ content: "Pong!" })
-    }
+	async execute(interaction) {
+		await interaction.reply({ content: 'Pong!' });
+	},
 };

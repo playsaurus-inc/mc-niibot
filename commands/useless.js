@@ -1,13 +1,14 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("useless")
-        .setDescription("Useless present drops"),
+	data: new SlashCommandBuilder()
+		.setName('useless')
+		.setDescription('Useless present drops'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
-
-        await interaction.reply({ content: "Presents can drop forge coals, and used to drop bloop coins, both of which are useless." })
-    }
+	async execute(interaction) {
+		await interaction.reply({
+			content:
+				'Presents can drop forge coals, and used to drop bloop coins, both of which are useless.',
+		});
+	},
 };

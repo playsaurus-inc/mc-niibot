@@ -1,13 +1,11 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("universaltruth")
-        .setDescription("A universal truth"),
+	data: new SlashCommandBuilder()
+		.setName('universaltruth')
+		.setDescription('A universal truth'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
-
-        await interaction.reply({ content: "People are idiots." })
-    }
+	async execute(interaction) {
+		await interaction.reply({ content: 'People are idiots.' });
+	},
 };

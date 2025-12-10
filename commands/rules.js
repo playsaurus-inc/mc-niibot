@@ -1,14 +1,14 @@
-
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("rules")
-        .setDescription("Mods are the rules."),
+	data: new SlashCommandBuilder()
+		.setName('rules')
+		.setDescription('Mods are the rules.'),
 
-    async execute(interaction) {
-        const { channel, options } = interaction;
-
-        await interaction.reply({ content: "Mods **are** the rules.", ephemeral: false })
-    }
-}
+	async execute(interaction) {
+		await interaction.reply({
+			content: 'Mods **are** the rules.',
+			ephemeral: false,
+		});
+	},
+};
