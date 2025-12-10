@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription('For the glory of satan of course!'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({ content: 'For the glory of satan of course!' });
 	},
 };

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,7 +6,6 @@ module.exports = {
 		.setDescription('order(s) of magnitude'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
 		await interaction.reply({
 			content: 'Order(s) of Magnitude',
 			ephemeral: false,

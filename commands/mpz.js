@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,7 +8,6 @@ module.exports = {
 		),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
 		await interaction.reply({
 			content: 'Monsters per zone. The fewer, the faster. We want faster.',
 			ephemeral: false,

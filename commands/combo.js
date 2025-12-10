@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription("Info on Juggernaut's combo"),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({
 			content:
 				"Juggernaut's combo lasts 5 minutes after last time you or your autoclicker have clicked monsters. Combo damage does not apply when idle.",

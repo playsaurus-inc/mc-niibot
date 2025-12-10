@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription('Value-level ancients with V'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({
 			content:
 				"***YOU CAN HOLD 'V' AND CLICK TO LEVEL UP ANCIENTS FASTER!!!***",

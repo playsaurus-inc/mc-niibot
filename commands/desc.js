@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,7 +6,6 @@ module.exports = {
 		.setDescription('Read the channel description!'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
 		await interaction.reply({
 			content: 'Read the channel description!',
 			ephemeral: false,

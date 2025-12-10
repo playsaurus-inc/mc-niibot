@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,7 +17,7 @@ module.exports = {
 		),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
+		const { options } = interaction;
 
 		await interaction.reply({
 			content: options._hoistedOptions[0].value,

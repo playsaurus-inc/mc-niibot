@@ -51,7 +51,6 @@ const {
 	Events,
 	GatewayIntentBits,
 	Partials,
-	PermissionFlagsBits,
 	PermissionsBitField,
 } = require('discord.js');
 const fs = require('node:fs');
@@ -307,7 +306,6 @@ function setRole(highestHeroUnlocked, message) {
 				'954484630868881421': 'Dorothy',
 			};
 			var roleKeys = Object.keys(roles);
-			var { cache } = guildMember.guild.roles;
 			log('adding role');
 
 			if (highestHeroUnlocked > 0) {
@@ -400,7 +398,8 @@ bot.on(Events.MessageCreate, (message) => {
 												);
 											} else {
 												let userBanned = false;
-												const highestHeroUnlocked = getHighestHeroUnlocked(save);
+												const highestHeroUnlocked =
+													getHighestHeroUnlocked(save);
 												const rubies = save.rubies;
 												const gameUID = save.uniqueId;
 

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription('sarcastic EDR response'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({
 			content:
 				'30 Clicks over a 10 hour period to get half a boss worth dps?\nSounds like a good use of my time.',

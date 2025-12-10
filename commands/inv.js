@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription('the official link to the discord server'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({
 			content:
 				'Official invite to this Discord server: \nhttps://discord.gg/playsaurus',

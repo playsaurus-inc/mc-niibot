@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,8 +6,6 @@ module.exports = {
 		.setDescription('Treasure Chest Chance'),
 
 	async execute(interaction) {
-		const { channel, options } = interaction;
-
 		await interaction.reply({
 			content: "Treasure Chest Chance. It's usually 1% anyway. No big deal.",
 		});
