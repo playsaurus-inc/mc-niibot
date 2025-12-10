@@ -57,4 +57,4 @@ The `uploads` folder is used to store the attachments sent by users, such as `.t
 
 ## 📜 License
 
-This project is licensed under the ISC License (as specified in `package.json`).
+This project is licensed under the MIT License.
