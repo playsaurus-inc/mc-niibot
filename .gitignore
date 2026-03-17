@@ -26,5 +26,8 @@ bannedFromRoles.json
 # Temporary files
 uploads/
 
-# AI Files
-.claude/settings.local.json
+# TypeScript build output
+dist/
+
+# Local files
+*.local.*

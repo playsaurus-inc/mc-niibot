@@ -1,0 +1,15 @@
+import { SlashCommandBuilder } from 'discord.js';
+import type { BotCommand } from '../types/command.js';
+
+export const command: BotCommand = {
+	data: new SlashCommandBuilder()
+		.setName('morgulis')
+		.setDescription('What does morgulis do?'),
+
+	async execute(interaction) {
+		await interaction.reply({
+			content:
+				'Morgulis is an ancient that serves as essentially a bank for your Hero Souls. Whatever you put in has interest applied to it, leading to a 1.1x damage multiplier given enough HS is put in.',
+		});
+	},
+};
