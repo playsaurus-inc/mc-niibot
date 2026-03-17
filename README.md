@@ -1,11 +1,11 @@
 # McNiibot: Clicker Heroes Discord Bot
 
-A Discord.js bot designed for the Clicker Heroes Discord server. It provides a wide array of game-specific information, moderation assistance, and automated role assignments based on player progress. The core functionality and event handling are managed in `index.js`.
+A Discord.js bot designed for the Clicker Heroes Discord server. It provides a wide array of game-specific information, moderation assistance, and automated role assignments based on player progress.
 
 ## 👾 Features
 
 -   **Extensive Game Information:** Over 80 slash commands providing detailed information about Clicker Heroes 1 mechanics, ancients, outsiders, strategies, and more (e.g., `/active`, `/ancients`, `/as`, `/firsttrans`, `/hybrid`, `/idle`, `/merc`, `/outsiders`, `/rubies`, `/skills`, `/timelapse`, `/trans`).
--   **Utility Commands:** Includes `/calclist` for links to useful calculators, `/faq`, `/glossary`, and an `/image` command with autocomplete for posting catered images. All commands can be found in the `/commands` folder.
+-   **Utility Commands:** Includes `/calclist` for links to useful calculators, `/faq`, `/glossary`, and an `/image` command with autocomplete for posting catered images.
 -   **Moderation & Auto-Moderation:** Features basic moderation tools and robust auto-moderation capabilities, including anti-spam, detection of scam links (e.g., fake Nitro), filtering of racist comments, and restrictions on posting external Discord links by new members.
 -   **Automated Role Assignment:** Assigns Discord roles to users based on their in-game progress. Players can DM the bot their `.txt` save file, which the bot processes to determine the highest hero unlocked and assign a corresponding role.
 -   **Automated Responses:** Provides quick answers to common questions and phrases within the community.
@@ -27,16 +27,19 @@ cp .env.example .env
 ```
 
 Then edit the `.env` file and replace the placeholder values with your actual:
-*   `DISCORD_TOKEN`: Your Discord bot token.
-*   `DISCORD_CLIENT_ID`: Your bot's client ID.
-*   `DISCORD_GUILD_ID`: The ID of the Discord server (guild) where the bot will operate.
+
+-  `DISCORD_TOKEN`: Your Discord bot token.
+-  `DISCORD_CLIENT_ID`: Your bot's client ID.
+-  `DISCORD_GUILD_ID`: The ID of the Discord server (guild) where the bot will operate.
+-  `SENTRY_DSN` (optional): Your Sentry DSN for error tracking.
 
 > If you are developing locally, you may want to use a dedicated test server and its ID for `DISCORD_GUILD_ID`.
 
-### 3. Start the Bot
+### 3. Build and Start the Bot
 
 ```bash
-node index.js
+npm run build
+npm start
 ```
 
 If the configuration is correct, the bot should appear online in Discord, and its slash commands will be registered/updated for the specified guild.
