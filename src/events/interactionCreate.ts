@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import type { Interaction } from 'discord.js';
+import { type Interaction, MessageFlags } from 'discord.js';
 
 export async function onInteractionCreate(
 	interaction: Interaction,
@@ -22,15 +22,15 @@ export async function onInteractionCreate(
 				extra: { command: interaction.commandName },
 			});
 
-			const reply = {
-				content: 'There was an error while executing this command!',
-				ephemeral: true,
-			};
-
+			const content = 'There was an error while executing this command!';
 			if (interaction.replied || interaction.deferred) {
-				await interaction.followUp(reply).catch(console.error);
+				await interaction
+					.followUp({ content, flags: MessageFlags.Ephemeral })
+					.catch(console.error);
 			} else {
-				await interaction.reply(reply).catch(console.error);
+				await interaction
+					.reply({ content, flags: MessageFlags.Ephemeral })
+					.catch(console.error);
 			}
 		}
 	} else if (interaction.isAutocomplete()) {
