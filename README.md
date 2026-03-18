@@ -35,14 +35,19 @@ Then edit the `.env` file and replace the placeholder values with your actual:
 
 > If you are developing locally, you may want to use a dedicated test server and its ID for `DISCORD_GUILD_ID`.
 
-### 3. Build and Start the Bot
+### 3. Start the Bot
 
 ```bash
-npm run build
 npm start
 ```
 
 If the configuration is correct, the bot should appear online in Discord, and its slash commands will be registered/updated for the specified guild.
+
+To type-check without running:
+
+```bash
+npm run typecheck
+```
 
 ## 🧹 Code Quality
 

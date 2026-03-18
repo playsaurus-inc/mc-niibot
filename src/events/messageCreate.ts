@@ -2,12 +2,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as Sentry from '@sentry/node';
 import { type Message, PermissionsBitField } from 'discord.js';
-import { config } from '../config.js';
+import { config } from '../config.ts';
 import {
 	channelsPostedIn,
 	userMessageHistory,
-} from '../services/moderation.js';
-import { setRole } from '../services/roles.js';
+} from '../services/moderation.ts';
+import { setRole } from '../services/roles.ts';
 import {
 	addBannedSave,
 	addSave,
@@ -17,7 +17,7 @@ import {
 	getSaves,
 	isBannedFromRole,
 	UPLOADS_DIR,
-} from '../services/saves.js';
+} from '../services/saves.ts';
 
 const AUTO_BAN_WORDS = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
 
@@ -322,7 +322,8 @@ async function handleAutoMod(
 		userChannels[channelId] = currentTime;
 
 		if (channelKeys.length > 3) {
-			delete userChannels[channelKeys[0]];
+			const oldestKey = channelKeys[0];
+			if (oldestKey) delete userChannels[oldestKey];
 			channelKeys = Object.keys(userChannels);
 		}
 

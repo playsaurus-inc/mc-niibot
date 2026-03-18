@@ -7,12 +7,12 @@ import {
 	GatewayIntentBits,
 	Partials,
 } from 'discord.js';
-import { deployCommands } from './deploy-commands.js';
-import { onInteractionCreate } from './events/interactionCreate.js';
-import { onMessageCreate } from './events/messageCreate.js';
-import { onReady } from './events/ready.js';
-import { loadAll, startAutoSync } from './services/saves.js';
-import type { BotCommand } from './types/command.js';
+import { deployCommands } from './deploy-commands.ts';
+import { onInteractionCreate } from './events/interactionCreate.ts';
+import { onMessageCreate } from './events/messageCreate.ts';
+import { onReady } from './events/ready.ts';
+import { loadAll, startAutoSync } from './services/saves.ts';
+import type { BotCommand } from './types/command.ts';
 
 interface BotOptions {
 	token: string;
