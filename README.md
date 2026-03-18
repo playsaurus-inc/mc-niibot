@@ -59,13 +59,31 @@ npm run biome
 
 ## 🚢 Deployment
 
-Simply create a new release in GitHub and the website will be automatically deployed to the server.
+Simply create a new release in GitHub and the bot will be automatically deployed to the server.
 
-> [!NOTE] 
+> [!NOTE]
 > **How it works:** When you create a new Github release, a GitHub Action will merge the `main` branch into the `production` branch and Forge will deploy the changes. The deployment is handled by Laravel Forge using the `production` branch.
 
 > [!NOTE]
 > Always create releases from the `main` branch to ensure all tested changes are included in the deployment.
+
+**Deploy script used in Forge:**
+
+```bash
+cd /home/forge/mc-niibot
+
+git pull --tags origin $FORGE_SITE_BRANCH
+
+# Ensure logs directory exists
+mkdir -p logs
+
+npm install
+
+# Restart the application using PM2 ecosystem config
+pm2 reload ecosystem.config.cjs --env production || pm2 start ecosystem.config.cjs --env production
+
+pm2 save
+```
 
 ## 📂 Uploads folder
 

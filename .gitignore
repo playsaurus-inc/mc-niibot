@@ -26,6 +26,9 @@ bannedFromRoles.json
 # Temporary files
 uploads/
 
+# PM2 logs
+logs/
+
 # TypeScript build output
 dist/
 
