@@ -27,36 +27,26 @@ let bannedFromRoles: BannedFromRolesStore = { bannedFromRoles: [] };
  * Loads all JSON data stores from disk into memory. Must be called once at startup.
  */
 export function loadAll(): void {
-	saves = JSON.parse(readFileSync(SAVES_FILE, 'utf8')) as SaveStore;
-	bannedSaves = JSON.parse(
-		readFileSync(BANNED_SAVES_FILE, 'utf8'),
-	) as BannedSaveStore;
-
-	const rawBannedFromRoles = JSON.parse(
-		readFileSync(BANNED_FROM_ROLES_FILE, 'utf8'),
-	);
-	// TODO: Remove this migration after first deploy
-	if (
-		rawBannedFromRoles.bannedFromRoles.length > 0 &&
-		typeof rawBannedFromRoles.bannedFromRoles[0] === 'string'
-	) {
-		bannedFromRoles = {
-			bannedFromRoles: rawBannedFromRoles.bannedFromRoles.map(
-				(userID: string) => ({
-					userID,
-					username: null,
-					bannedAt: null,
-					reason: null,
-				}),
-			),
-		};
-	} else {
-		bannedFromRoles = rawBannedFromRoles as BannedFromRolesStore;
-	}
+	saves = loadJsonFile<SaveStore>(SAVES_FILE, { saves: [] });
+	bannedSaves = loadJsonFile<BannedSaveStore>(BANNED_SAVES_FILE, { saves: [] });
+	bannedFromRoles = loadJsonFile<BannedFromRolesStore>(BANNED_FROM_ROLES_FILE, {
+		bannedFromRoles: [],
+	});
 
 	if (!existsSync(UPLOADS_DIR)) {
 		mkdirSync(UPLOADS_DIR);
 	}
+}
+
+/**
+ * Loads a JSON file from disk, or returns a default value if the file doesn't exist.
+ */
+function loadJsonFile<T>(filePath: string, defaultValue: T): T {
+	if (!existsSync(filePath)) {
+		writeFileSync(filePath, JSON.stringify(defaultValue));
+		return defaultValue;
+	}
+	return JSON.parse(readFileSync(filePath, 'utf8')) as T;
 }
 
 /**
