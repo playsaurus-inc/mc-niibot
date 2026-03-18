@@ -35,7 +35,7 @@ Then edit the `.env` file and replace the placeholder values with your actual:
 
 > If you are developing locally, you may want to use a dedicated test server and its ID for `DISCORD_GUILD_ID`.
 
-### 3. Build and Start the Bot
+### 3. Start the Bot
 
 ```bash
 npm start
