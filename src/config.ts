@@ -16,6 +16,6 @@ export const config = {
 		/** Time window (ms) for rapid-message spam detection */
 		spamWindowMs: 8_000,
 		/** Max rubies before a save is considered cheated */
-		maxRubies: 15_000,
+		maxRubies: 5_000_000,
 	},
 } as const;

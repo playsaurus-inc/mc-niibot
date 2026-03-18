@@ -18,6 +18,7 @@ import {
 	isBannedFromRole,
 	UPLOADS_DIR,
 } from '../services/saves.ts';
+import { BanReason } from '../types/save.ts';
 
 const AUTO_BAN_WORDS = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
 
@@ -88,39 +89,77 @@ async function handleDm(message: Message): Promise<void> {
 		const gameUID = saveData.uniqueId;
 
 		const saves = getSaves();
-		let userBanned = false;
+		let banReason: BanReason | null = null;
+		let matchedUserID: string | undefined;
 
 		for (const entry of saves.saves) {
 			if (!entry.gameUID) continue;
-
-			if (
-				(entry.gameUID === gameUID && entry.userID !== message.author.id) ||
-				rubies > config.moderation.maxRubies
-			) {
-				userBanned = true;
-				banFromRole(message.author.id);
-				await message.reply(
-					'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
-				);
-
-				const guild = message.client.guilds.cache.get(config.guildId);
-				const targetMember = guild?.members.cache.get(message.author.id);
-				if (targetMember) {
-					await targetMember.roles.set([]).catch(console.error);
-				}
+			if (entry.gameUID === gameUID && entry.userID !== message.author.id) {
+				matchedUserID = entry.userID;
+				banReason = BanReason.DuplicateSave;
 				break;
 			}
 		}
 
-		if (userBanned) {
+		if (rubies > config.moderation.maxRubies) {
+			banReason = BanReason.ExcessiveRubies;
+		}
+
+		if (banReason) {
+			banFromRole(message.author.id, message.author.username, banReason);
+			await message.reply(
+				'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
+			);
+
+			const guild = message.client.guilds.cache.get(config.guildId);
+			const targetMember = guild?.members.cache.get(message.author.id);
+			if (targetMember) {
+				await targetMember.roles.set([]).catch(console.error);
+			}
+
+			const auditChannel = guild?.channels.cache.find(
+				(ch) => ch.name === 'audit-log',
+			);
+			if (auditChannel?.isTextBased()) {
+				let reasonText: string;
+				switch (banReason) {
+					case BanReason.ExcessiveRubies:
+						reasonText = `having ${rubies.toLocaleString()} rubies (max: ${config.moderation.maxRubies.toLocaleString()})`;
+						break;
+					case BanReason.DuplicateSave:
+						reasonText = `submitting a duplicate save (gameUID: ${gameUID})`;
+						break;
+					default: {
+						const _exhaustive: never = banReason;
+						reasonText = `unknown reason: ${_exhaustive}`;
+					}
+				}
+				await auditChannel
+					.send({
+						content: `Banned <@${message.author.id}> from role assignment for ${reasonText}.`,
+					})
+					.catch(console.error);
+			}
+
 			addBannedSave({
 				userID: message.author.id,
+				username: message.author.username,
 				gameUID,
-				userBanned,
+				rubies,
+				matchedUserID,
+				userBanned: true,
+				bannedAt: new Date().toISOString(),
+				reason: banReason,
 				save: rawData,
 			});
 		} else {
-			addSave({ userID: message.author.id, gameUID, save: rawData });
+			addSave({
+				userID: message.author.id,
+				username: message.author.username,
+				gameUID,
+				createdAt: new Date().toISOString(),
+				save: rawData,
+			});
 			await setRole(
 				highestHeroUnlocked,
 				message,
