@@ -1,4 +1,8 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import {
+	MessageFlags,
+	PermissionFlagsBits,
+	SlashCommandBuilder,
+} from 'discord.js';
 import type { BotCommand } from '../types/command.ts';
 
 export const command: BotCommand = {
@@ -19,7 +23,10 @@ export const command: BotCommand = {
 
 		if (!channel?.isSendable()) return;
 
-		await interaction.reply({ content: 'sending pings', ephemeral: true });
+		await interaction.reply({
+			content: 'sending pings',
+			flags: MessageFlags.Ephemeral,
+		});
 
 		setTimeout(() => {
 			channel.send(`${user} are`).catch(console.error);
