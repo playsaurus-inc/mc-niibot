@@ -29,10 +29,9 @@ let bannedFromRoles: BannedFromRolesStore = { bannedFromRoles: [] };
 export function loadAll(): void {
 	saves = loadJsonFile<SaveStore>(SAVES_FILE, { saves: [] });
 	bannedSaves = loadJsonFile<BannedSaveStore>(BANNED_SAVES_FILE, { saves: [] });
-	bannedFromRoles = loadJsonFile<BannedFromRolesStore>(
-		BANNED_FROM_ROLES_FILE,
-		{ bannedFromRoles: [] },
-	);
+	bannedFromRoles = loadJsonFile<BannedFromRolesStore>(BANNED_FROM_ROLES_FILE, {
+		bannedFromRoles: [],
+	});
 
 	if (!existsSync(UPLOADS_DIR)) {
 		mkdirSync(UPLOADS_DIR);
