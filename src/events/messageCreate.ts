@@ -153,7 +153,7 @@ async function handleRecruitmentChannel(message: Message): Promise<void> {
 			const fallback = message.client.channels.cache.get(
 				config.channels.modFallback,
 			);
-			if (fallback?.isTextBased())
+			if (fallback?.isSendable())
 				await fallback.send(messageText).catch(console.error);
 		});
 
