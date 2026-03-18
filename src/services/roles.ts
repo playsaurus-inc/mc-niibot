@@ -1,5 +1,5 @@
 import type { Client, Message } from 'discord.js';
-import { isBannedFromRole } from './saves.js';
+import { isBannedFromRole } from './saves.ts';
 
 /** Maps hero slot index (1-based, as string) to Discord role ID */
 export const HERO_ROLES: Record<string, string> = {

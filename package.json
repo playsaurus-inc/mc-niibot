@@ -2,12 +2,12 @@
 	"name": "mc-niibot",
 	"version": "1.5.0",
 	"description": "bot for discord",
-	"main": "dist/index.js",
+	"type": "module",
 	"author": "McNiiby",
 	"license": "MIT",
 	"scripts": {
-		"build": "tsc",
-		"start": "node dist/index.js",
+		"start": "tsx src/index.ts",
+		"typecheck": "tsc --noEmit",
 		"biome": "npx @biomejs/biome check . --write"
 	},
 	"dependencies": {
@@ -18,6 +18,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
 		"@types/node": "^22.0.0",
+		"tsx": "^4.0.0",
 		"typescript": "^5.0.0"
 	}
 }

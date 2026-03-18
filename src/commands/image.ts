@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import type { BotCommand } from '../types/command.js';
+import type { BotCommand } from '../types/command.ts';
 
 const IMAGE_CHOICES: Record<string, string> = {
 	numberwang:

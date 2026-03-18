@@ -8,7 +8,7 @@ import type {
 	SaveData,
 	SaveEntry,
 	SaveStore,
-} from '../types/save.js';
+} from '../types/save.ts';
 
 const ROOT = process.cwd();
 const SAVES_FILE = path.join(ROOT, 'saves.json');

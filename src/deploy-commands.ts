@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import type { BotCommand } from './types/command.js';
+import type { BotCommand } from './types/command.ts';
 
 /**
  * Registers slash commands with the Discord guild via the REST API.

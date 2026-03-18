@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import type { BotCommand } from '../types/command.js';
+import type { BotCommand } from '../types/command.ts';
 
 export const command: BotCommand = {
 	data: new SlashCommandBuilder()
