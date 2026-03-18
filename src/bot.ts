@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
 	Client,
 	Collection,
@@ -14,22 +15,24 @@ import { onReady } from './events/ready.ts';
 import { loadAll, startAutoSync } from './services/saves.ts';
 import type { BotCommand } from './types/command.ts';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 interface BotOptions {
 	token: string;
 	clientId: string;
 	guildId: string;
 }
 
-function loadCommands(): BotCommand[] {
+async function loadCommands(): Promise<BotCommand[]> {
 	const commandsPath = path.join(__dirname, 'commands');
 	const commandFiles = fs
 		.readdirSync(commandsPath)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith('.ts'));
 	const commands: BotCommand[] = [];
 
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const loaded = require(filePath) as { command?: BotCommand };
+		const loaded = (await import(filePath)) as { command?: BotCommand };
 
 		if (
 			loaded.command &&
@@ -69,7 +72,7 @@ export async function startBot({
 
 	client.commands = new Collection<string, BotCommand>();
 
-	const commands = loadCommands();
+	const commands = await loadCommands();
 	for (const command of commands) {
 		client.commands.set(command.data.name, command);
 	}
