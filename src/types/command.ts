@@ -3,12 +3,11 @@ import type {
 	Awaitable,
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
+	SlashCommandOptionsOnlyBuilder,
 } from 'discord.js';
 
 export interface BotCommand {
-	data:
-		| SlashCommandBuilder
-		| Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+	data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
 	execute: (interaction: ChatInputCommandInteraction) => Awaitable<void>;
 	autoComplete?: (interaction: AutocompleteInteraction) => Awaitable<void>;
 }

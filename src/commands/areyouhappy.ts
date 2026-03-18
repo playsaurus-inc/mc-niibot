@@ -17,22 +17,24 @@ export const command: BotCommand = {
 		const { channel, options } = interaction;
 		const user = options.getUser('user', true);
 
+		if (!channel?.isSendable()) return;
+
 		await interaction.reply({ content: 'sending pings', ephemeral: true });
 
 		setTimeout(() => {
-			channel?.send(`${user} are`).catch(console.error);
+			channel.send(`${user} are`).catch(console.error);
 		}, 1000);
 		setTimeout(() => {
-			channel?.send(`${user} you`).catch(console.error);
+			channel.send(`${user} you`).catch(console.error);
 		}, 2000);
 		setTimeout(() => {
-			channel?.send(`${user} happy`).catch(console.error);
+			channel.send(`${user} happy`).catch(console.error);
 		}, 3000);
 		setTimeout(() => {
-			channel?.send(`${user} now`).catch(console.error);
+			channel.send(`${user} now`).catch(console.error);
 		}, 4000);
 		setTimeout(() => {
-			channel?.send(`${user} ?`).catch(console.error);
+			channel.send(`${user} ?`).catch(console.error);
 		}, 5000);
 	},
 };
