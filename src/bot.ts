@@ -16,7 +16,10 @@ import {
 } from 'discord.js';
 import { config } from './config.ts';
 import { deployCommands } from './deploy-commands.ts';
-import { ModerationService } from './services/moderation.ts';
+import {
+	handleDiscordError,
+	ModerationService,
+} from './services/moderation.ts';
 import { RoleService } from './services/roles.ts';
 import { SaveService, UPLOADS_DIR } from './services/saves.ts';
 import type { BotCommand } from './types/command.ts';
@@ -381,6 +384,6 @@ export class Bot {
 					await fallback.send(messageText).catch(console.error);
 			});
 
-		await message.delete().catch(console.error);
+		await message.delete().catch(handleDiscordError);
 	}
 }
