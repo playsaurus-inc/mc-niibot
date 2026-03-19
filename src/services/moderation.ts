@@ -1,7 +1,28 @@
-import { type Message, PermissionsBitField } from 'discord.js';
+import * as Sentry from '@sentry/node';
+import { DiscordAPIError, type Message, PermissionsBitField } from 'discord.js';
 import { config } from '../config.ts';
 
+/** Discord API error codes that are expected and safe to ignore in automod. */
+const IGNORED_DISCORD_ERRORS = new Set([
+	10008, // Unknown Message - already deleted
+	50278, // Cannot send messages to this user - DMs disabled
+]);
+
 const AUTO_BAN_WORDS = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
+
+/**
+ * Silently ignores expected Discord API errors (e.g. message already deleted, DMs disabled)
+ * and reports anything unexpected to Sentry.
+ */
+export function handleDiscordError(error: unknown): void {
+	if (
+		error instanceof DiscordAPIError &&
+		IGNORED_DISCORD_ERRORS.has(Number(error.code))
+	) {
+		return;
+	}
+	Sentry.captureException(error);
+}
 
 /**
  * Handles automatic moderation by tracking per-user message history and
@@ -116,7 +137,7 @@ export class ModerationService {
 			(message.embeds.length > 0 || lowercaseContent.includes('https:/'))
 		) {
 			const content = message.content;
-			await message.delete().catch(console.error);
+			await message.delete().catch(handleDiscordError);
 			await message.member
 				?.ban({
 					deleteMessageSeconds: 7 * 24 * 60 * 60,
@@ -151,12 +172,12 @@ export class ModerationService {
 		>,
 	): Promise<boolean> {
 		if (isNewMember && lowercaseContent.includes('discord.gg')) {
-			await message.delete().catch(console.error);
+			await message.delete().catch(handleDiscordError);
 			console.log(`Link posted by ${message.author.username}`);
 
 			await message.member
 				?.send('Do not post links to other Discord Servers')
-				.catch(console.error);
+				.catch(handleDiscordError);
 
 			if (auditChannel?.isTextBased()) {
 				await auditChannel
@@ -182,7 +203,7 @@ export class ModerationService {
 				'Checkout this game I am playing https://play.google.com',
 			)
 		) {
-			await message.delete().catch(console.error);
+			await message.delete().catch(handleDiscordError);
 			return true;
 		}
 
@@ -207,13 +228,13 @@ export class ModerationService {
 		for (const word of AUTO_BAN_WORDS) {
 			if (lowercaseContent.includes(word)) {
 				const content = message.content;
-				await message.delete().catch(console.error);
+				await message.delete().catch(handleDiscordError);
 
 				await message.member
 					?.send(
 						'You have been banned from the Clicker Heroes Discord for posting racist comments.',
 					)
-					.catch(console.error);
+					.catch(handleDiscordError);
 
 				await message.member
 					?.ban({
@@ -269,10 +290,10 @@ export class ModerationService {
 				oldest - newest > -config.moderation.spamWindowMs
 			) {
 				const content = message.content;
-				await message.delete().catch(console.error);
+				await message.delete().catch(handleDiscordError);
 				await message.member
 					?.send('You have been banned for spamming')
-					.catch(console.error);
+					.catch(handleDiscordError);
 				await message.member
 					?.ban({
 						deleteMessageSeconds: 7 * 24 * 60 * 60,
@@ -334,10 +355,10 @@ export class ModerationService {
 			const last = timestamps[timestamps.length - 1];
 
 			if (first !== undefined && last !== undefined && first - last > -10_000) {
-				await message.delete().catch(console.error);
+				await message.delete().catch(handleDiscordError);
 				await message.member
 					?.send('You have been banned for spamming')
-					.catch(console.error);
+					.catch(handleDiscordError);
 				await message.member
 					?.ban({
 						deleteMessageSeconds: 7 * 24 * 60 * 60,
