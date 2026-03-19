@@ -70,9 +70,9 @@ export const command: BotCommand = {
 
 	async autoComplete(interaction) {
 		const focusedValue = interaction.options.getFocused();
-		const filtered = Object.keys(IMAGE_CHOICES).filter((key) =>
-			key.startsWith(focusedValue),
-		);
+		const filtered = Object.keys(IMAGE_CHOICES)
+			.filter((key) => key.startsWith(focusedValue))
+			.slice(0, 25);
 
 		await interaction.respond(
 			filtered.map((key) => ({
