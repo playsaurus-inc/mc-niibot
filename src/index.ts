@@ -47,13 +47,14 @@ process.on('uncaughtException', (error) => {
 });
 
 import('./bot')
-	.then(({ startBot }) =>
-		startBot({
+	.then(({ Bot }) => {
+		const bot = new Bot({
 			token: DISCORD_TOKEN,
 			clientId: DISCORD_CLIENT_ID,
 			guildId: DISCORD_GUILD_ID,
-		}),
-	)
+		});
+		return bot.start();
+	})
 	.catch((error: unknown) => {
 		console.error('Failed to start bot:', error);
 		Sentry.captureException(error);
