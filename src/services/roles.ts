@@ -1,5 +1,5 @@
 import type { Client, Message } from 'discord.js';
-import { isBannedFromRole } from './saves.ts';
+import type { SaveService } from './saves.ts';
 
 /** Maps hero slot index (1-based, as string) to Discord role ID */
 export const HERO_ROLES: Record<string, string> = {
@@ -60,41 +60,50 @@ export const HERO_ROLES: Record<string, string> = {
 };
 
 /**
- * Assigns the appropriate hero role based on the player's highest unlocked hero.
- * No-ops if the user is banned from roles or the hero index is out of range.
+ * Handles hero role assignment based on the player's highest unlocked hero.
  */
-export async function setRole(
-	highestHeroUnlocked: number,
-	message: Message,
-	client: Client,
-	guildId: string,
-): Promise<void> {
-	const userId = message.author.id;
+export class RoleService {
+	constructor(
+		private _client: Client,
+		private _guildId: string,
+		private _saveService: SaveService,
+	) {}
 
-	if (isBannedFromRole(userId)) return;
-	if (highestHeroUnlocked <= 0) return;
+	/**
+	 * Assigns the appropriate hero role based on the player's highest unlocked hero.
+	 * No-ops if the user is banned from roles or the hero index is out of range.
+	 *
+	 * @param highestHeroUnlocked - The 1-based hero slot index of the highest unlocked hero.
+	 * @param message - The Discord message that triggered the role assignment.
+	 */
+	async setRole(highestHeroUnlocked: number, message: Message): Promise<void> {
+		const userId = message.author.id;
 
-	const guild = client.guilds.cache.get(guildId);
-	if (!guild) {
-		console.error(`Guild ${guildId} not found in cache`);
-		return;
-	}
+		if (this._saveService.isBannedFromRole(userId)) return;
+		if (highestHeroUnlocked <= 0) return;
 
-	try {
-		const guildMember = await guild.members.fetch(userId);
-		const roleId = HERO_ROLES[String(highestHeroUnlocked)];
-
-		if (!roleId) {
-			console.error(`No role mapped for hero index ${highestHeroUnlocked}`);
+		const guild = this._client.guilds.cache.get(this._guildId);
+		if (!guild) {
+			console.error(`Guild ${this._guildId} not found in cache`);
 			return;
 		}
 
-		await guildMember.roles.add(roleId);
-		console.log(`Assigned role ${roleId} to ${userId}`);
-		await message.reply(
-			'You have been assigned a role on the Clicker Heroes Discord. Post a message in chat to see it.',
-		);
-	} catch (error) {
-		console.error('Failed to assign role:', error);
+		try {
+			const guildMember = await guild.members.fetch(userId);
+			const roleId = HERO_ROLES[String(highestHeroUnlocked)];
+
+			if (!roleId) {
+				console.error(`No role mapped for hero index ${highestHeroUnlocked}`);
+				return;
+			}
+
+			await guildMember.roles.add(roleId);
+			console.log(`Assigned role ${roleId} to ${userId}`);
+			await message.reply(
+				'You have been assigned a role on the Clicker Heroes Discord. Post a message in chat to see it.',
+			);
+		} catch (error) {
+			console.error('Failed to assign role:', error);
+		}
 	}
 }
