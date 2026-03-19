@@ -35,20 +35,20 @@ function loadJsonFile<T>(filePath: string, defaultValue: T): T {
  * from role assignment) with periodic disk synchronization.
  */
 export class SaveService {
-	private saves: SaveStore = { saves: [] };
-	private bannedSaves: BannedSaveStore = { saves: [] };
-	private bannedFromRoles: BannedFromRolesStore = { bannedFromRoles: [] };
-	private autoSyncInterval: ReturnType<typeof setInterval> | null = null;
+	private _saves: SaveStore = { saves: [] };
+	private _bannedSaves: BannedSaveStore = { saves: [] };
+	private _bannedFromRoles: BannedFromRolesStore = { bannedFromRoles: [] };
+	private _autoSyncInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
 	 * Loads all JSON data stores from disk into memory. Must be called once at startup.
 	 */
 	loadAll(): void {
-		this.saves = loadJsonFile<SaveStore>(SAVES_FILE, { saves: [] });
-		this.bannedSaves = loadJsonFile<BannedSaveStore>(BANNED_SAVES_FILE, {
+		this._saves = loadJsonFile<SaveStore>(SAVES_FILE, { saves: [] });
+		this._bannedSaves = loadJsonFile<BannedSaveStore>(BANNED_SAVES_FILE, {
 			saves: [],
 		});
-		this.bannedFromRoles = loadJsonFile<BannedFromRolesStore>(
+		this._bannedFromRoles = loadJsonFile<BannedFromRolesStore>(
 			BANNED_FROM_ROLES_FILE,
 			{
 				bannedFromRoles: [],
@@ -64,9 +64,12 @@ export class SaveService {
 	 * Persists all in-memory data stores to their respective JSON files on disk.
 	 */
 	syncToDisk(): void {
-		writeFileSync(SAVES_FILE, JSON.stringify(this.saves));
-		writeFileSync(BANNED_SAVES_FILE, JSON.stringify(this.bannedSaves));
-		writeFileSync(BANNED_FROM_ROLES_FILE, JSON.stringify(this.bannedFromRoles));
+		writeFileSync(SAVES_FILE, JSON.stringify(this._saves));
+		writeFileSync(BANNED_SAVES_FILE, JSON.stringify(this._bannedSaves));
+		writeFileSync(
+			BANNED_FROM_ROLES_FILE,
+			JSON.stringify(this._bannedFromRoles),
+		);
 	}
 
 	/**
@@ -75,7 +78,7 @@ export class SaveService {
 	 * @param intervalMs - Sync interval in milliseconds. Defaults to 5 minutes.
 	 */
 	startAutoSync(intervalMs = 300_000): void {
-		this.autoSyncInterval = setInterval(() => {
+		this._autoSyncInterval = setInterval(() => {
 			console.log('Writing save data to disk');
 			this.syncToDisk();
 		}, intervalMs);
@@ -85,9 +88,9 @@ export class SaveService {
 	 * Stops the periodic auto-sync of in-memory data to disk.
 	 */
 	stopAutoSync(): void {
-		if (this.autoSyncInterval) {
-			clearInterval(this.autoSyncInterval);
-			this.autoSyncInterval = null;
+		if (this._autoSyncInterval) {
+			clearInterval(this._autoSyncInterval);
+			this._autoSyncInterval = null;
 		}
 	}
 
@@ -95,7 +98,7 @@ export class SaveService {
 	 * Returns the in-memory save store.
 	 */
 	getSaves(): SaveStore {
-		return this.saves;
+		return this._saves;
 	}
 
 	/**
@@ -104,7 +107,7 @@ export class SaveService {
 	 * @param userId - Discord user ID to check.
 	 */
 	isBannedFromRole(userId: string): boolean {
-		return this.bannedFromRoles.bannedFromRoles.some(
+		return this._bannedFromRoles.bannedFromRoles.some(
 			(entry) => entry.userID === userId,
 		);
 	}
@@ -117,13 +120,16 @@ export class SaveService {
 	 * @param reason - The reason for the ban.
 	 */
 	banFromRole(userId: string, username: string, reason: BanReason): void {
-		this.bannedFromRoles.bannedFromRoles.push({
+		this._bannedFromRoles.bannedFromRoles.push({
 			userID: userId,
 			username,
 			bannedAt: new Date().toISOString(),
 			reason,
 		});
-		writeFileSync(BANNED_FROM_ROLES_FILE, JSON.stringify(this.bannedFromRoles));
+		writeFileSync(
+			BANNED_FROM_ROLES_FILE,
+			JSON.stringify(this._bannedFromRoles),
+		);
 	}
 
 	/**
@@ -132,7 +138,7 @@ export class SaveService {
 	 * @param entry - The save entry to store.
 	 */
 	addSave(entry: SaveEntry): void {
-		this.saves.saves.push(entry);
+		this._saves.saves.push(entry);
 	}
 
 	/**
@@ -141,7 +147,7 @@ export class SaveService {
 	 * @param entry - The banned save entry to store.
 	 */
 	addBannedSave(entry: BannedSaveEntry): void {
-		this.bannedSaves.saves.push(entry);
+		this._bannedSaves.saves.push(entry);
 	}
 
 	/**

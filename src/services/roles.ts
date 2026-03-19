@@ -64,9 +64,9 @@ export const HERO_ROLES: Record<string, string> = {
  */
 export class RoleService {
 	constructor(
-		private client: Client,
-		private guildId: string,
-		private saveService: SaveService,
+		private _client: Client,
+		private _guildId: string,
+		private _saveService: SaveService,
 	) {}
 
 	/**
@@ -79,12 +79,12 @@ export class RoleService {
 	async setRole(highestHeroUnlocked: number, message: Message): Promise<void> {
 		const userId = message.author.id;
 
-		if (this.saveService.isBannedFromRole(userId)) return;
+		if (this._saveService.isBannedFromRole(userId)) return;
 		if (highestHeroUnlocked <= 0) return;
 
-		const guild = this.client.guilds.cache.get(this.guildId);
+		const guild = this._client.guilds.cache.get(this._guildId);
 		if (!guild) {
-			console.error(`Guild ${this.guildId} not found in cache`);
+			console.error(`Guild ${this._guildId} not found in cache`);
 			return;
 		}
 

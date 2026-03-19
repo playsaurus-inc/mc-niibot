@@ -9,10 +9,10 @@ const AUTO_BAN_WORDS = ['nigger', 'nigga', 'jew', 'n1gger', 'n!gger'];
  */
 export class ModerationService {
 	/** Tracks recent message timestamps per user for rapid-message spam detection */
-	private userMessageHistory: Record<string, number[]> = {};
+	private _userMessageHistory: Record<string, number[]> = {};
 
 	/** Tracks the last post time per channel per user for cross-channel spam detection */
-	private channelsPostedIn: Record<string, Record<string, number>> = {};
+	private _channelsPostedIn: Record<string, Record<string, number>> = {};
 
 	/**
 	 * Runs all auto-moderation checks against a guild message.
@@ -253,12 +253,12 @@ export class ModerationService {
 		if (!isNewMember || hasMod) return false;
 
 		const userId = message.author.id;
-		const history = this.userMessageHistory[userId] ?? [];
+		const history = this._userMessageHistory[userId] ?? [];
 		history.push(currentTime);
 
 		if (history.length > config.moderation.spamMessageCount) {
 			const trimmed = history.slice(-config.moderation.spamMessageCount);
-			this.userMessageHistory[userId] = trimmed;
+			this._userMessageHistory[userId] = trimmed;
 
 			const oldest = trimmed[0];
 			const newest = trimmed[trimmed.length - 1];
@@ -290,7 +290,7 @@ export class ModerationService {
 				return true;
 			}
 		} else {
-			this.userMessageHistory[userId] = history;
+			this._userMessageHistory[userId] = history;
 		}
 
 		return false;
@@ -312,7 +312,7 @@ export class ModerationService {
 		const userId = message.author.id;
 		const channelId = message.channel.id;
 
-		const userChannels = this.channelsPostedIn[userId] ?? {};
+		const userChannels = this._channelsPostedIn[userId] ?? {};
 		let channelKeys = Object.keys(userChannels);
 
 		userChannels[channelId] = currentTime;
@@ -323,7 +323,7 @@ export class ModerationService {
 			channelKeys = Object.keys(userChannels);
 		}
 
-		this.channelsPostedIn[userId] = userChannels;
+		this._channelsPostedIn[userId] = userChannels;
 
 		const timestamps = channelKeys
 			.map((k) => userChannels[k] as number)

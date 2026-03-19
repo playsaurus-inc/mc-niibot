@@ -35,13 +35,13 @@ interface BotOptions {
  * and delegates to specialized services for saves, roles, and moderation.
  */
 export class Bot {
-	private client: Client;
-	private saveService: SaveService;
-	private roleService!: RoleService;
-	private moderationService: ModerationService;
+	private _client: Client;
+	private _saveService: SaveService;
+	private _roleService!: RoleService;
+	private _moderationService: ModerationService;
 
-	constructor(private options: BotOptions) {
-		this.client = new Client({
+	constructor(private _options: BotOptions) {
+		this._client = new Client({
 			intents: [
 				GatewayIntentBits.Guilds,
 				GatewayIntentBits.GuildMessages,
@@ -56,8 +56,8 @@ export class Bot {
 			},
 		});
 
-		this.saveService = new SaveService();
-		this.moderationService = new ModerationService();
+		this._saveService = new SaveService();
+		this._moderationService = new ModerationService();
 	}
 
 	/**
@@ -65,40 +65,40 @@ export class Bot {
 	 * and logs the bot into Discord.
 	 */
 	async start(): Promise<void> {
-		this.client.commands = new Collection<string, BotCommand>();
+		this._client.commands = new Collection<string, BotCommand>();
 
 		// RoleService needs the client, so it's created here after the client is ready
-		this.roleService = new RoleService(
-			this.client,
-			this.options.guildId,
-			this.saveService,
+		this._roleService = new RoleService(
+			this._client,
+			this._options.guildId,
+			this._saveService,
 		);
 
 		const commands = await this.loadCommands();
 		for (const command of commands) {
-			this.client.commands.set(command.data.name, command);
+			this._client.commands.set(command.data.name, command);
 		}
 
 		await deployCommands(
 			commands,
-			this.options.clientId,
-			this.options.guildId,
-			this.options.token,
+			this._options.clientId,
+			this._options.guildId,
+			this._options.token,
 		).catch(console.error);
 
-		this.saveService.loadAll();
-		this.saveService.startAutoSync();
+		this._saveService.loadAll();
+		this._saveService.startAutoSync();
 
-		this.client.once(Events.ClientReady, () => this.onReady());
-		this.client.on(Events.InteractionCreate, (interaction) =>
+		this._client.once(Events.ClientReady, () => this.onReady());
+		this._client.on(Events.InteractionCreate, (interaction) =>
 			this.onInteractionCreate(interaction),
 		);
-		this.client.on(Events.MessageCreate, (msg) => this.onMessageCreate(msg));
-		this.client.on('error', (error) =>
+		this._client.on(Events.MessageCreate, (msg) => this.onMessageCreate(msg));
+		this._client.on('error', (error) =>
 			console.error('Discord client error:', error),
 		);
 
-		await this.client.login(this.options.token);
+		await this._client.login(this._options.token);
 	}
 
 	/**
@@ -137,7 +137,7 @@ export class Bot {
 	 * Handles the ClientReady event, logging that the bot is online.
 	 */
 	private onReady(): void {
-		console.log(`${this.client.user?.username} is online!`);
+		console.log(`${this._client.user?.username} is online!`);
 	}
 
 	/**
@@ -207,13 +207,13 @@ export class Bot {
 			}
 
 			if (!message.guild || !message.member) return;
-			if (message.guild.id !== this.options.guildId) return;
+			if (message.guild.id !== this._options.guildId) return;
 
 			const memberJoinTime = message.member.joinedTimestamp ?? 0;
 			const currentTime = Date.now();
 
 			await this.handleRecruitmentChannel(message);
-			await this.moderationService.handleAutoMod(
+			await this._moderationService.handleAutoMod(
 				message,
 				memberJoinTime,
 				currentTime,
@@ -228,7 +228,7 @@ export class Bot {
 	 * Processes save file uploads received via DM for role assignment.
 	 */
 	private async handleDm(message: Message): Promise<void> {
-		if (this.saveService.isBannedFromRole(message.author.id)) {
+		if (this._saveService.isBannedFromRole(message.author.id)) {
 			await message.reply(
 				'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
 			);
@@ -268,7 +268,7 @@ export class Bot {
 			const rubies = saveData.rubies;
 			const gameUID = saveData.uniqueId;
 
-			const saves = this.saveService.getSaves();
+			const saves = this._saveService.getSaves();
 			let banReason: BanReason | null = null;
 			let matchedUserID: string | undefined;
 
@@ -286,7 +286,7 @@ export class Bot {
 			}
 
 			if (banReason) {
-				this.saveService.banFromRole(
+				this._saveService.banFromRole(
 					message.author.id,
 					message.author.username,
 					banReason,
@@ -325,7 +325,7 @@ export class Bot {
 						.catch(console.error);
 				}
 
-				this.saveService.addBannedSave({
+				this._saveService.addBannedSave({
 					userID: message.author.id,
 					username: message.author.username,
 					gameUID,
@@ -337,14 +337,14 @@ export class Bot {
 					save: rawData,
 				});
 			} else {
-				this.saveService.addSave({
+				this._saveService.addSave({
 					userID: message.author.id,
 					username: message.author.username,
 					gameUID,
 					createdAt: new Date().toISOString(),
 					save: rawData,
 				});
-				await this.roleService.setRole(highestHeroUnlocked, message);
+				await this._roleService.setRole(highestHeroUnlocked, message);
 			}
 		} finally {
 			await fsPromises
