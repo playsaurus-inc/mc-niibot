@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/node';
 import {
 	Client,
 	Collection,
+	DiscordAPIError,
 	Events,
 	GatewayIntentBits,
 	type Interaction,
@@ -14,6 +15,7 @@ import {
 	Partials,
 	PermissionsBitField,
 } from 'discord.js';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 import { config } from './config.ts';
 import { deployCommands } from './deploy-commands.ts';
 import {
@@ -164,6 +166,13 @@ export class Bot {
 				Sentry.captureException(error, {
 					extra: { command: interaction.commandName },
 				});
+
+				// No point replying if the interaction already expired
+				if (
+					error instanceof DiscordAPIError &&
+					error.code === RESTJSONErrorCodes.UnknownInteraction
+				)
+					return;
 
 				const content = 'There was an error while executing this command!';
 				if (interaction.replied || interaction.deferred) {
