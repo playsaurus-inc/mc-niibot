@@ -162,17 +162,18 @@ export class Bot {
 			try {
 				await command.execute(interaction);
 			} catch (error) {
+				if (
+					error instanceof DiscordAPIError &&
+					error.code === RESTJSONErrorCodes.UnknownInteraction
+				) {
+					console.warn(`Expired interaction in /${interaction.commandName}`);
+					return;
+				}
+
 				console.error(error);
 				Sentry.captureException(error, {
 					extra: { command: interaction.commandName },
 				});
-
-				// No point replying if the interaction already expired
-				if (
-					error instanceof DiscordAPIError &&
-					error.code === RESTJSONErrorCodes.UnknownInteraction
-				)
-					return;
 
 				const content = 'There was an error while executing this command!';
 				if (interaction.replied || interaction.deferred) {
