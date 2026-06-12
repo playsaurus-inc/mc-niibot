@@ -51,7 +51,6 @@ export class Bot {
 				GatewayIntentBits.Guilds,
 				GatewayIntentBits.GuildMessages,
 				GatewayIntentBits.MessageContent,
-				GatewayIntentBits.GuildMembers,
 				GatewayIntentBits.DirectMessages,
 			],
 			partials: [Partials.Channel],
@@ -309,7 +308,9 @@ export class Bot {
 				);
 
 				const guild = message.client.guilds.cache.get(config.guildId);
-				const targetMember = guild?.members.cache.get(message.author.id);
+				const targetMember = await guild?.members
+					.fetch(message.author.id)
+					.catch(() => null);
 				if (targetMember) {
 					await targetMember.roles.set([]).catch(console.error);
 				}
