@@ -50,7 +50,9 @@ export class Bot {
 			intents: [
 				GatewayIntentBits.Guilds,
 				GatewayIntentBits.GuildMessages,
-				GatewayIntentBits.MessageContent,
+				...(config.requiresMessageContent
+					? [GatewayIntentBits.MessageContent]
+					: []),
 				GatewayIntentBits.DirectMessages,
 			],
 			partials: [Partials.Channel],
@@ -69,6 +71,8 @@ export class Bot {
 	 * and logs the bot into Discord.
 	 */
 	async start(): Promise<void> {
+		this.logFeatures();
+
 		this._client.commands = new Collection<string, BotCommand>();
 
 		// RoleService needs the client, so it's created here after the client is ready
@@ -103,6 +107,24 @@ export class Bot {
 		);
 
 		await this._client.login(this._options.token);
+	}
+
+	/**
+	 * Logs the enabled features and whether Message Content was requested.
+	 */
+	private logFeatures(): void {
+		const disabled = Object.entries(config.features)
+			.filter(([, enabled]) => !enabled)
+			.map(([name]) => name);
+
+		console.log(
+			disabled.length > 0
+				? `Disabled features: ${disabled.join(', ')}`
+				: 'All features enabled',
+		);
+		console.log(
+			`Message Content intent: ${config.requiresMessageContent ? 'requested' : 'not requested'}`,
+		);
 	}
 
 	/**
@@ -372,6 +394,7 @@ export class Bot {
 	 * deleting non-conforming messages and notifying the user.
 	 */
 	private async handleRecruitmentChannel(message: Message): Promise<void> {
+		if (!config.features.recruitmentFormat) return;
 		if (message.channel.id !== config.channels.recruitment) return;
 		if (message.content.toLowerCase().startsWith('recruiting:')) return;
 		if (!message.member) return;

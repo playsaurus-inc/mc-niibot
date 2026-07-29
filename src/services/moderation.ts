@@ -127,6 +127,7 @@ export class ModerationService {
 			NonNullable<Message['guild']>['channels']['cache']['find']
 		>,
 	): Promise<boolean> {
+		if (!config.features.nitroScamMod) return false;
 		if (hasMod) return false;
 
 		if (
@@ -173,6 +174,8 @@ export class ModerationService {
 			NonNullable<Message['guild']>['channels']['cache']['find']
 		>,
 	): Promise<boolean> {
+		if (!config.features.inviteLinkMod) return false;
+
 		if (isNewMember && lowercaseContent.includes('discord.gg')) {
 			await message.delete().catch(handleDiscordError);
 			console.log(`Link posted by ${message.author.username}`);
@@ -200,6 +203,8 @@ export class ModerationService {
 	 * @returns true if the message was Google Play spam and was handled.
 	 */
 	private async checkGooglePlaySpam(message: Message): Promise<boolean> {
+		if (!config.features.googlePlaySpamMod) return false;
+
 		if (
 			message.content.includes(
 				'Checkout this game I am playing https://play.google.com',
@@ -225,6 +230,7 @@ export class ModerationService {
 			NonNullable<Message['guild']>['channels']['cache']['find']
 		>,
 	): Promise<boolean> {
+		if (!config.features.slurBanMod) return false;
 		if (!isNewMember) return false;
 
 		for (const word of AUTO_BAN_WORDS) {
@@ -273,6 +279,7 @@ export class ModerationService {
 			NonNullable<Message['guild']>['channels']['cache']['find']
 		>,
 	): Promise<boolean> {
+		if (!config.features.rapidMessageSpamMod) return false;
 		if (!isNewMember || hasMod) return false;
 
 		const userId = message.author.id;
@@ -330,6 +337,7 @@ export class ModerationService {
 			NonNullable<Message['guild']>['channels']['cache']['find']
 		>,
 	): Promise<void> {
+		if (!config.features.crossChannelSpamMod) return;
 		if (hasMod) return;
 
 		const userId = message.author.id;
