@@ -35,7 +35,23 @@ Then edit the `.env` file and replace the placeholder values with your actual:
 
 > If you are developing locally, you may want to use a dedicated test server and its ID for `DISCORD_GUILD_ID`.
 
-### 3. Start the Bot
+### 3. Feature Flags
+
+Each moderation feature can be switched off without a code change. Set the flag to `false` to disable it, `true` or omit it to leave it on. Any other value stops the bot at startup rather than guessing.
+
+| Flag | Feature | Reads message text |
+| --- | --- | --- |
+| `RECRUITMENT_FORMAT_ENABLED` | Deletes recruitment posts missing the `Recruiting:` prefix | yes |
+| `NITRO_SCAM_MOD_ENABLED` | Bans nitro scam posts | yes |
+| `INVITE_LINK_MOD_ENABLED` | Removes `discord.gg` links from new members | yes |
+| `GOOGLE_PLAY_SPAM_MOD_ENABLED` | Removes the Google Play spam message | yes |
+| `SLUR_BAN_MOD_ENABLED` | Bans new members posting slurs | yes |
+| `RAPID_MESSAGE_SPAM_MOD_ENABLED` | Bans 6 messages in 8 seconds from new members | no |
+| `CROSS_CHANNEL_SPAM_MOD_ENABLED` | Bans posting to 4+ channels in 10 seconds | no |
+
+The Message Content privileged intent is requested only while at least one text-reading feature is on. Turn all five off and the bot connects without it. The startup log reports which features are disabled and whether the intent was requested.
+
+### 4. Start the Bot
 
 ```bash
 npm start
