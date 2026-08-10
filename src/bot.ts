@@ -26,6 +26,7 @@ import { RoleService } from './services/roles.ts';
 import { SaveService, UPLOADS_DIR } from './services/saves.ts';
 import type { BotCommand } from './types/command.ts';
 import { BanReason } from './types/save.ts';
+import { audit } from './utils/audit.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -72,6 +73,12 @@ export class Bot {
 	 */
 	async start(): Promise<void> {
 		this.logFeatures();
+		audit('bot.started', {
+			enabledFeatures: Object.entries(config.features)
+				.filter(([, enabled]) => enabled)
+				.map(([name]) => name),
+			messageContentRequested: config.requiresMessageContent,
+		});
 
 		this._client.commands = new Collection<string, BotCommand>();
 
@@ -182,7 +189,19 @@ export class Bot {
 
 			try {
 				await command.execute(interaction);
+				audit('command.executed', {
+					channelId: interaction.channelId,
+					command: interaction.commandName,
+					guildId: interaction.guildId,
+					userId: interaction.user.id,
+				});
 			} catch (error) {
+				audit('command.failed', {
+					channelId: interaction.channelId,
+					command: interaction.commandName,
+					guildId: interaction.guildId,
+					userId: interaction.user.id,
+				});
 				if (
 					error instanceof DiscordAPIError &&
 					error.code === RESTJSONErrorCodes.UnknownInteraction
@@ -263,6 +282,10 @@ export class Bot {
 	 */
 	private async handleDm(message: Message): Promise<void> {
 		if (this._saveService.isBannedFromRole(message.author.id)) {
+			audit('save.rejected', {
+				reason: 'user_already_banned',
+				userId: message.author.id,
+			});
 			await message.reply(
 				'Your save was determined to be illegitimate either because you cheated or used a different users save. You will no longer be eligible for ranks on the server.',
 			);
@@ -273,6 +296,10 @@ export class Bot {
 		if (!attachment?.name?.includes('.txt')) return;
 
 		console.log('Received DM save file');
+		audit('save.received', {
+			input: 'attachment',
+			userId: message.author.id,
+		});
 
 		const filePath = path.join(UPLOADS_DIR, attachment.name);
 
@@ -288,10 +315,20 @@ export class Bot {
 
 			const rawData = await fsPromises.readFile(filePath, 'utf8');
 
-			if (!rawData.includes('7a990') && !rawData.includes('7e8bb')) return;
+			if (!rawData.includes('7a990') && !rawData.includes('7e8bb')) {
+				audit('save.rejected', {
+					reason: 'unsupported_format',
+					userId: message.author.id,
+				});
+				return;
+			}
 
 			const saveData = SaveService.decodeSave(rawData);
 			if (!saveData) {
+				audit('save.rejected', {
+					reason: 'decode_failed',
+					userId: message.author.id,
+				});
 				await message.reply(
 					'Your save could not be read, be sure to copy the full text of the save file and try again.',
 				);
@@ -320,6 +357,10 @@ export class Bot {
 			}
 
 			if (banReason) {
+				audit('save.banned', {
+					reason: banReason,
+					userId: message.author.id,
+				});
 				this._saveService.banFromRole(
 					message.author.id,
 					message.author.username,
@@ -373,6 +414,10 @@ export class Bot {
 					save: rawData,
 				});
 			} else {
+				audit('save.accepted', {
+					highestHeroUnlocked,
+					userId: message.author.id,
+				});
 				this._saveService.addSave({
 					userID: message.author.id,
 					username: message.author.username,
@@ -419,5 +464,11 @@ export class Bot {
 			});
 
 		await message.delete().catch(handleDiscordError);
+		audit('channel.recruitment_rejected', {
+			channelId: message.channel.id,
+			guildId: message.guildId,
+			temporaryMessageContent: message.content,
+			userId: message.author.id,
+		});
 	}
 }

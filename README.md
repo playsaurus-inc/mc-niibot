@@ -51,6 +51,10 @@ Each moderation feature can be switched off without a code change. Set the flag 
 
 The Message Content privileged intent is requested only while at least one text-reading feature is on. Turn all five off and the bot connects without it. The startup log reports which features are disabled and whether the intent was requested.
 
+### Activity Audit
+
+User-visible bot actions are appended to daily `logs/audit-YYYY-MM-DD.jsonl` files. Each line contains a timestamp, a stable event name, and relevant IDs or outcome metadata.
+
 ### 4. Start the Bot
 
 ```bash
