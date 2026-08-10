@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node';
 import { DiscordAPIError, type Message, PermissionsBitField } from 'discord.js';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 import { config } from '../config.ts';
+import { audit } from '../utils/audit.ts';
 
 /** Discord API error codes that are expected and safe to ignore. */
 const IGNORED_DISCORD_ERRORS = new Set([
@@ -139,6 +140,13 @@ export class ModerationService {
 				lowercaseContent.includes('nltro')) &&
 			(message.embeds.length > 0 || lowercaseContent.includes('https:/'))
 		) {
+			audit('moderation.nitro_scam', {
+				action: 'ban',
+				channelId: message.channel.id,
+				guildId: message.guildId,
+				temporaryMessageContent: message.content,
+				userId: message.author.id,
+			});
 			const content = message.content;
 			await message.delete().catch(handleDiscordError);
 			await message.member
@@ -177,6 +185,13 @@ export class ModerationService {
 		if (!config.features.inviteLinkMod) return false;
 
 		if (isNewMember && lowercaseContent.includes('discord.gg')) {
+			audit('moderation.invite_link', {
+				action: 'delete_and_warn',
+				channelId: message.channel.id,
+				guildId: message.guildId,
+				temporaryMessageContent: message.content,
+				userId: message.author.id,
+			});
 			await message.delete().catch(handleDiscordError);
 			console.log(`Link posted by ${message.author.username}`);
 
@@ -210,6 +225,13 @@ export class ModerationService {
 				'Checkout this game I am playing https://play.google.com',
 			)
 		) {
+			audit('moderation.google_play_spam', {
+				action: 'delete',
+				channelId: message.channel.id,
+				guildId: message.guildId,
+				temporaryMessageContent: message.content,
+				userId: message.author.id,
+			});
 			await message.delete().catch(handleDiscordError);
 			return true;
 		}
@@ -235,6 +257,13 @@ export class ModerationService {
 
 		for (const word of AUTO_BAN_WORDS) {
 			if (lowercaseContent.includes(word)) {
+				audit('moderation.slur', {
+					action: 'ban',
+					channelId: message.channel.id,
+					guildId: message.guildId,
+					temporaryMessageContent: message.content,
+					userId: message.author.id,
+				});
 				const content = message.content;
 				await message.delete().catch(handleDiscordError);
 
@@ -298,6 +327,15 @@ export class ModerationService {
 				newest !== undefined &&
 				oldest - newest > -config.moderation.spamWindowMs
 			) {
+				audit('moderation.rapid_message_spam', {
+					action: 'ban',
+					channelId: message.channel.id,
+					guildId: message.guildId,
+					messageCount: config.moderation.spamMessageCount,
+					temporaryMessageContent: message.content,
+					userId: message.author.id,
+					windowMs: config.moderation.spamWindowMs,
+				});
 				const content = message.content;
 				await message.delete().catch(handleDiscordError);
 				await message.member
@@ -365,6 +403,14 @@ export class ModerationService {
 			const last = timestamps[timestamps.length - 1];
 
 			if (first !== undefined && last !== undefined && first - last > -10_000) {
+				audit('moderation.cross_channel_spam', {
+					action: 'ban',
+					channelIds: channelKeys,
+					guildId: message.guildId,
+					temporaryMessageContent: message.content,
+					userId: message.author.id,
+					windowMs: 10_000,
+				});
 				await message.delete().catch(handleDiscordError);
 				await message.member
 					?.send('You have been banned for spamming')

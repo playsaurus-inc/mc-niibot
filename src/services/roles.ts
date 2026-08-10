@@ -1,4 +1,5 @@
 import type { Client, Message } from 'discord.js';
+import { audit } from '../utils/audit.ts';
 import type { SaveService } from './saves.ts';
 
 /** Maps hero slot index (1-based, as string) to Discord role ID */
@@ -99,6 +100,12 @@ export class RoleService {
 
 			await guildMember.roles.add(roleId);
 			console.log(`Assigned role ${roleId} to ${userId}`);
+			audit('role.assigned', {
+				guildId: this._guildId,
+				heroIndex: highestHeroUnlocked,
+				roleId,
+				userId,
+			});
 			await message.reply(
 				'You have been assigned a role on the Clicker Heroes Discord. Post a message in chat to see it.',
 			);
