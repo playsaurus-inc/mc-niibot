@@ -382,11 +382,10 @@ export class ModerationService {
 		const channelId = message.channel.id;
 
 		const userChannels = this._channelsPostedIn[userId] ?? {};
+		userChannels[channelId] = currentTime;
 		let channelKeys = Object.keys(userChannels);
 
-		userChannels[channelId] = currentTime;
-
-		if (channelKeys.length > 3) {
+		if (channelKeys.length > 4) {
 			const oldestKey = channelKeys[0];
 			if (oldestKey) delete userChannels[oldestKey];
 			channelKeys = Object.keys(userChannels);
