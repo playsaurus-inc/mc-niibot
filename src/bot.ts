@@ -411,7 +411,6 @@ export class Bot {
 					userBanned: true,
 					bannedAt: new Date().toISOString(),
 					reason: banReason,
-					save: rawData,
 				});
 			} else {
 				audit('save.accepted', {
@@ -423,7 +422,6 @@ export class Bot {
 					username: message.author.username,
 					gameUID,
 					createdAt: new Date().toISOString(),
-					save: rawData,
 				});
 				await this._roleService.setRole(highestHeroUnlocked, message);
 			}
@@ -467,7 +465,6 @@ export class Bot {
 		audit('channel.recruitment_rejected', {
 			channelId: message.channel.id,
 			guildId: message.guildId,
-			temporaryMessageContent: message.content,
 			userId: message.author.id,
 		});
 	}
