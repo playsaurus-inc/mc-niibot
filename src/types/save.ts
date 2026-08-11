@@ -8,8 +8,6 @@ export interface SaveEntry {
 	gameUID: string | undefined;
 	/** ISO 8601 timestamp of when the save was submitted. Missing on legacy entries. */
 	createdAt?: string;
-	/** Raw encoded save file contents. */
-	save: string;
 }
 
 /** Reason a save was flagged and the user was banned from role assignment. */
@@ -38,8 +36,6 @@ export interface BannedSaveEntry {
 	bannedAt: string;
 	/** The reason the save was flagged. */
 	reason: BanReason;
-	/** Raw encoded save file contents. */
-	save: string;
 }
 
 /** Persistent store for valid save submissions. */
